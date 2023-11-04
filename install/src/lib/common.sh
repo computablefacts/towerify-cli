@@ -34,3 +34,7 @@ install_succeeded() {
   echo "  $(bold "towerify init")"
   echo
 }
+
+display_question() {
+  echo "$(bold "? $1 ?")"
+}
