@@ -1,0 +1,38 @@
+# When overriding from the user folder, feel free to delete everything
+# you do not plan on overriding to keep the default string.
+
+# Usage captions
+usage: "Usage :"
+options: "Options :"
+arguments: "Arguments :"
+commands: "Commandes :"
+examples: "Exemples :"
+environment_variables: "Variables d'environnement :"
+group: "%{group} Commandes :"
+
+# Usage helpers
+command_alias: "Alias : %{alias}"
+default_command_summary: "%{summary} (defaut)"
+required: "(obligatoire)"
+repeatable: "(répétable)"
+default: "Defaut : %{value}"
+allowed: "Valeurs possibles : %{values}"
+
+# Fixed flags help text
+help_flag_text: Affiche cette aide
+version_flag_text: Affiche le numéro de version
+
+# Error messages
+flag_requires_an_argument: "%{name} doit avoir un argument : %{usage}"
+invalid_argument: "argument invalide : %s"
+invalid_flag: "option invalide : %s"
+invalid_command: "commande invalide : %s"
+conflicting_flags: "options en conflit : %s ne peut pas être utilisée avec %s"
+missing_required_argument: "argument obligatoire manquant : %{arg}\\nusage: %{usage}"
+missing_required_flag: "option obligatoire manquante : %{usage}"
+missing_required_environment_variable: "variable d'environnement obligatoire manquante : %{var}"
+missing_dependency: "dépendance manquante : %{dependency}"
+disallowed_flag: "L'option %{name} doit être une de ces valeurs : %{allowed}"
+disallowed_argument: "L'argument %{name} doit être une de ces valeurs : %{allowed}"
+unsupported_bash_version: "bash version 4 ou plus est nécessaire"
+validation_error: "erreur de validation dans %s:\\n%s"

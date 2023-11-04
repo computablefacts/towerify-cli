@@ -1,0 +1,61 @@
+name: towerify
+help: Towerify CLI. See https://docs.towerify.io/
+version: 0.1.0
+
+flags:
+  - &flag_debug
+    long: --debug
+    short: -d
+    help: Mode DEBUG
+
+commands:
+- name: init
+  help: |-
+    Initialise une nouvelle application
+
+    Vous devez être dans le répertoire de l'application avant d'utiliser cette commande.
+
+  args:
+    - name: name
+      help: Nom de l'application
+    - name: type
+      help: Type de l'application
+      allowed: [ask, static, lamp]
+      default: ask
+
+  flags:
+    - *flag_debug
+    - long: --force
+      short: -f
+      help: Efface la configuration existante
+
+  examples:
+    - towerify init
+    - towerify init --force
+
+
+- name: deploy
+  help: Déploie une application
+
+  filters:
+    - app_config_should_exist
+
+  flags:
+    - *flag_debug
+    - long: --env
+      short: -e
+      arg: env
+      help: Environnement
+      allowed: [dev, staging, prod]
+      default: dev
+
+dependencies:
+  curl:
+    command: [curl]
+    help: run 'sudo apt-get install -y curl'
+  wget:
+    command: [wget]
+    help: run 'sudo apt-get install -y wget'
+  yq:
+    command: [yq]
+    help: run 'sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && sudo chmod +x /usr/bin/yq'

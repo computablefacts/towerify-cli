@@ -1,0 +1,22 @@
+name: install
+help: Towerify CLI installation script
+version: 0.1.0
+
+args:
+- name: domain
+  help: Domaine principal de Towerify
+  default: "acme.towerify.io"
+
+flags:
+- long: --debug
+  short: -d
+  help: Show debug information
+
+examples:
+- install
+- install --debug
+
+dependencies:
+  wget:
+    command: [wget]
+    help: run 'sudo apt-get install -y wget'
