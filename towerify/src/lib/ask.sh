@@ -1,3 +1,9 @@
+ask_password() {
+  read -s -p "(Par sécurité, les caractères que vous tapez ne s'afficheront à l'écran)
+> " answer
+  echo $answer
+}
+
 ask_string() {
   read -p "> " answer
   echo $answer
