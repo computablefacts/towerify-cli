@@ -1,10 +1,12 @@
 Describe 'towerify init'
-  Path app-config-file='./.towerify.yaml'
+  Include src/lib/globals.sh
+
+  Path app-config-file="$app_config_file"
 
   Describe 'with no app initialised'
     remove_app_config() {
-      if [[ -e './.towerify.yaml' ]]; then
-        rm ./.towerify.yaml
+      if [[ -e $app_config_file ]]; then
+        rm $app_config_file
       fi
     }
 
@@ -41,8 +43,8 @@ Describe 'towerify init'
 
   Describe 'with app initialised'
     create_app_config() {
-      echo 'name: my-app' > ./.towerify.yaml
-      echo 'type: static' >> ./.towerify.yaml
+      echo 'name: my-app' > $app_config_file
+      echo 'type: static' >> $app_config_file
     }
 
     Before 'create_app_config'
@@ -51,7 +53,7 @@ Describe 'towerify init'
 
       When run source ./towerify init
       The status should eq 1
-      The stderr should include 'Le fichier .towerify.yaml existe déjà dans ce répertoire'
+      The stderr should include "Le fichier $app_config_file existe déjà dans ce répertoire"
     End
   End
 End
