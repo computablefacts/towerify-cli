@@ -17,6 +17,9 @@ examples:
 - install --debug
 
 dependencies:
-  wget:
-    command: [wget]
-    help: run 'sudo apt-get install -y wget'
+  curl:
+    command: [curl]
+    help: run 'sudo apt-get install -y curl'
+  jq:
+    command: [jq]
+    help: run 'sudo apt-get install -y jq'

@@ -18,27 +18,22 @@ mkdir -p $install_dir
 # Demander le Token Jenkins
 echo "$(bold "Installation de Towerify pour l'instance $towerify_domain")"
 echo
-echo "Pour vous authentifier auprès de Towerify, vous devez fournir votre Token"
-echo "Jenkins. Vous pouvez le créer en utilisant cette URL :"
-echo "  https://$jenkins_domain/me/configure"
-echo
-echo "Pour accéder à cette page, Towerify vous demandera de vous connecter avec"
-echo "vos login et mot de passe."
+echo "Pour vous authentifier auprès de Towerify, vous devez fournir votre login"
+echo "et votre mot de passe."
 echo
 display_question "Quel est votre login Towerify"
-jenkins_login=$(ask_string)
+towerify_login=$(ask_string)
 echo
-echo "Pour créer votre Token :"
-echo "- cliquez sur \"Ajouter un jeton\""
-echo "- saisissez son nom (\"Towerify CLI\" par exemple)"
-echo "- cliquez sur \"Générer\""
-echo "- copiez le Token"
 echo
-echo "Coller ensuite votre Token ci-dessous."
+display_question "Quel est votre mot de passe Towerify"
+towerify_password=$(ask_password)
 echo
-display_question "Quel est votre Token"
-jenkins_token=$(ask_string)
 echo
+
+# Check Towerify access
+echo "$(bold "Vérification de l'accès au Towerify $towerify_domain")"
+jenkins_confirm_access $jenkins_domain $towerify_login $towerify_password
+
 
 # Télécharger towerify cli
 download_towerify $towerify_script
@@ -49,9 +44,12 @@ ln -sf $towerify_script $HOME/.local/bin
 
 # Ecrire le fichier de conf (URL+Token) dans $HOME/.towerify/config.ini
 config_set towerify_domain $towerify_domain
+config_set towerify_login $towerify_login
+config_set towerify_password $towerify_password
 config_set jenkins_domain $jenkins_domain
-config_set jenkins_login $jenkins_login
-config_set jenkins_token $jenkins_token
+
+# Protect config.ini
+chmod 600 $CONFIG_FILE
 
 # Debug config.ini
 [[ $debug ]] && config_show

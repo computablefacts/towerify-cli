@@ -15,7 +15,7 @@ error_already_installed() {
   echo "  $(bold "towerify update")"
   echo
   echo "Si vous voulez changer d'instance Towerify, utilisez :"
-  echo "  $(bold "towerify config")"
+  echo "  $(bold "towerify configure")"
   echo
   exit 1
 }
