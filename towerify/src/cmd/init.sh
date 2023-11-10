@@ -28,7 +28,7 @@ fi
 # Ask for type if needed
 if [[ "$type" = "ask" ]]; then
   display_question "Choissisez un type d'application"
-  type=$(ask_choices "static" "lamp")
+  type=$(ask_choices "static")
   echo
 fi
 
