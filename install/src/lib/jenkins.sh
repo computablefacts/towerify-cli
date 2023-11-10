@@ -1,7 +1,7 @@
 is_json_valid() {
   json=$1
 
-  (jq . >/dev/null 2>&1 <<< "$result")
+  (jq . >/dev/null 2>&1 <<< "$json")
   local exit_code="$?"
 
   if [[ "$exit_code" = "0" ]]; then
