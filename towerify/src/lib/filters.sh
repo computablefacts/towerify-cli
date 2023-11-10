@@ -15,3 +15,13 @@ filter_app_config_should_exist() {
     echo "  $(bold "towerify init")"
   fi
 }
+
+filter_towerify_config_should_exist() {
+  if [[ ! -f ${CONFIG_FILE:-} ]]; then
+    echo "$(red_bold "Impossible de trouver le fichier de configuration de Towerify CLI.")"
+    echo "Ce fichier devrait être $SCRIPT_DIR/config.ini"
+    echo
+    echo "Vous pouvez configurer Towerify CLI avec :"
+    echo "  $(bold "towerify configure")"
+  fi
+}

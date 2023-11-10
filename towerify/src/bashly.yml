@@ -39,6 +39,7 @@ commands:
 
   filters:
     - app_config_should_exist
+    - towerify_config_should_exist
 
   flags:
     - *flag_debug
