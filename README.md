@@ -37,3 +37,20 @@ pour pouvoir tester le script :
 ``` bash
 ./towerify --help
 ```
+
+## Tests
+
+J'utilise [ShellSpec](https://shellspec.info/) pour faire des tests automatiques sur les fonctions
+écrites en Bash.
+
+Pour l'installer :
+
+``` bash
+curl -fsSL https://git.io/shellspec | sh -s -- --yes
+```
+
+Pour lancer les tests, se mettre dans le répertoire du script (`towerify` ou `install`) et :
+
+``` bash
+shellspec
+```
