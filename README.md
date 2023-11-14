@@ -54,3 +54,9 @@ Pour lancer les tests, se mettre dans le répertoire du script (`towerify` ou `i
 ``` bash
 shellspec
 ```
+
+Pour que les tests se relancent automatiquement :
+
+``` bash
+watch --color shellspec -q -f tap --color
+```
