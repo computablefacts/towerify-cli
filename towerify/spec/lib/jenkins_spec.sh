@@ -1,5 +1,6 @@
 Describe 'jenkins.sh'
   Include src/lib/jenkins.sh
+  Include src/lib/common.sh
   #Include src/lib/globals.sh
 
   Describe 'is_json_valid()'

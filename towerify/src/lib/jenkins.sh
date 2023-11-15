@@ -1,7 +1,7 @@
 is_json_valid() {
   json=$1
 
-  (${jq_cli} . >/dev/null 2>&1 <<< "${json}")
+  (${jq_cli:-jq} . >/dev/null 2>&1 <<< "${json}")
   return $?
 }
 
