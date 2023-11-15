@@ -14,46 +14,6 @@ Describe 'towerify deploy'
 
     Before 'create_app_config'
 
-    It 'should call jenkins_is_accessible'
-      Skip 'TODO'
-      jenkins_is_accessible() {
-        echo "jenkins_is_accessible called"
-        return 1
-      }
-
-      When call towerify_deploy
-      The output should include 'jenkins_is_accessible called'
-      The status should eq 1
-    End
-
-    It 'should call jenkins_check_job_exists'
-      Skip 'TODO'
-      jenkins_is_accessible() { 
-        return 0
-      }
-      jenkins_check_job_exists() {
-        echo "jenkins_check_job_exists called"
-      }
-
-      When call towerify_deploy
-      The output should include 'jenkins_check_job_exists called'
-    End
-
-    It 'should call jenkins_create_job if it does not already exist'
-      Skip 'TODO'
-      jenkins_is_accessible() { 
-        return 0
-      }
-      jenkins_check_job_exists() { 
-        return 1
-      }
-      jenkins_create_job() {
-        echo "jenkins_create_job called"
-      }
-
-      When call towerify_deploy
-      The output should include 'jenkins_create_job called'
-    End
   End
 
 

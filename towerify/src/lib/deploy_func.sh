@@ -4,9 +4,7 @@ towerify_deploy() {
 
   # Vérifier la connexion à Jenkins (le mettre dans un filtre Bashly ?)
   echo -n "Tentative de connexion à Towerify... "
-  jenkins_is_accessible
-  return_code=$?
-  if [[ $return_code -ne 0 ]]; then
+  if ! jenkins_is_accessible; then
     echo "$(red_bold "==> Connexion échouée.")"
     echo "Verifiez vos informations de connexion à Towerify."
     echo
@@ -17,16 +15,11 @@ towerify_deploy() {
   # Vérifier si le job Jenkins existe déjà ou pas
   # Job name = <app_name>_<env>
   echo -n "Vérification du pipeline de déploiement... "
-  jenkins_check_job_exists $jenkins_job_name
-  return_code=$?
-  debug_output "jenkins_check_job_exists-return_code=$return_code"
-  if [[ $return_code -ne 0 ]]; then
+  if ! jenkins_check_job_exists $jenkins_job_name; then
     # Le job n'existe pas
     echo "$(yellow "==> Pipeline non trouvé.")"
     echo -n "Création du pipeline... "
-    jenkins_create_job $jenkins_job_name $app_type
-    return_code=$?
-    if [[ $return_code -ne 0 ]]; then
+    if ! jenkins_create_job $jenkins_job_name $app_type; then
       echo "$(red_bold "==> Création échouée.")"
       exit 1
     fi

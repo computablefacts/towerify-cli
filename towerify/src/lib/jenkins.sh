@@ -21,12 +21,15 @@ jenkins_is_accessible() {
 
   result=$(jenkins_api $entrypoint)
   user_id=$(echo $result | ${jq_cli:-jq} -r '.id')
+  debug_output "user_id=$user_id"
 
   if [[ "$user_id" != "$user" ]]; then
-    return 1
+    debug_output "Jenkins est accessible"
+    false
+  else
+    debug_output "Jenkins n'est pas accessible"
+    true
   fi
-
-  return 0
 }
 
 jenkins_check_job_exists() {
@@ -42,10 +45,10 @@ jenkins_check_job_exists() {
   debug_output "jobs=\n----\n${jobs}\n----\n"
   if [[ $jobs =~ "$jenkins_job_name" ]]; then
     debug_output "Job trouvé"
-    return 0
+    true
   else
     debug_output "Job non trouvé"
-    return 1
+    false
   fi
 }
 
@@ -62,10 +65,10 @@ jenkins_create_job() {
 
   if [[ $return_code -ne 0 ]]; then
     debug_output "result=\n----\n${result}\n----\n"
-    return 1
+    false
+  else
+    true
   fi
-
-  return 0
 }
 
 jenkins_api() {

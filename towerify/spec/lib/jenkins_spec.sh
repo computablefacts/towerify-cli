@@ -1,6 +1,7 @@
 Describe 'jenkins.sh'
   Include src/lib/jenkins.sh
   Include src/lib/common.sh
+  Include src/lib/colors.sh
   #Include src/lib/globals.sh
 
   config_get() {
@@ -38,44 +39,88 @@ Describe 'jenkins.sh'
   End
 
   Describe 'jenkins_is_accessible()'
+    test_it() {
+      #debug=1
+      if jenkins_is_accessible; then
+        echo "true"
+      else
+        echo "false"
+      fi
+    }
 
-    It 'should return true if Jenkins answers'
+    It 'should be true if Jenkins answers'
       jenkins_api() {
         echo '{"id": "login"}'
       }
 
-      When call jenkins_is_accessible
-      The status should eq 0
+      When call test_it
+      The output should eq true
     End
 
-    It 'should return false if Jenkins does NOT answer'
+    It 'should be false if Jenkins does NOT answer'
       jenkins_api() {
         echo '{"id": "an_other_user"}'
       }
 
-      When call jenkins_is_accessible
-      The status should eq 1
+      When call test_it
+      The output should eq false
     End
   End
 
   Describe 'jenkins_check_job_exists()'
+    test_it() {
+      #debug=1
+      if jenkins_check_job_exists "my_job"; then
+        echo "true"
+      else
+        echo "false"
+      fi
+    }
 
-    It 'should return true if the job exists'
+    It 'should be true if the job exists'
       jenkins_api() {
         echo '{"jobs": [{"name": "my_job"}, {"name": "job2"}, {"name": "job3"}]}'
       }
 
-      When call jenkins_check_job_exists "my_job"
-      The status should eq 0
+      When call test_it
+      The output should eq true
     End
 
-    It 'should return false if the job does NOT exist'
+    It 'should be false if the job does NOT exist'
       jenkins_api() {
         echo '{"jobs": [{"name": "job1"}, {"name": "job2"}, {"name": "job3"}]}'
       }
 
-      When call jenkins_check_job_exists "my_job"
-      The status should eq 1
+      When call test_it
+      The output should eq false
+    End
+  End
+  Describe 'jenkins_create_job()'
+    test_it() {
+      #debug=1
+      if jenkins_create_job "my_job" "static"; then
+        echo "true"
+      else
+        echo "false"
+      fi
+    }
+
+    It 'should be true if the job is created'
+      jenkins_api() {
+        return 0
+      }
+
+      When call test_it
+      The output should eq true
+    End
+
+    It 'should be false if the job is NOT created'
+      jenkins_api() {
+        return 1
+      }
+
+      When call test_it
+      The output should eq false
     End
   End
 End
