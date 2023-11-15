@@ -1,4 +1,14 @@
-echo "# this file is located in 'src/cmd/deploy.sh'"
-echo "# code for 'towerify deploy' goes here"
-echo "# you can edit it freely and regenerate (it will not be overwritten)"
-inspect_args
+#inspect_args
+
+set_debug() {
+  debug=$1
+}
+
+# Paramétrage
+set_debug ${args[--debug]:-0}
+
+
+# TODO: lire .towerify.yaml pour récupérer app_name et app_type
+
+towerify_deploy "my-app_env" "static"
+
