@@ -57,6 +57,9 @@ dependencies:
   wget:
     command: [wget]
     help: run 'sudo apt-get install -y wget'
+  jq:
+    command: [jq]
+    help: run 'sudo apt-get install -y jq'
   yq:
     command: [yq]
     help: run 'sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && sudo chmod +x /usr/bin/yq'

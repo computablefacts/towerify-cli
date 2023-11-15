@@ -1,7 +1,7 @@
 is_json_valid() {
   json=$1
 
-  (jq . >/dev/null 2>&1 <<< "${json}")
+  (${jq_cli} . >/dev/null 2>&1 <<< "${json}")
   return $?
 }
 
@@ -20,7 +20,7 @@ jenkins_is_accessible() {
   debug_output "entrypoint=$entrypoint"
 
   result=$(jenkins_api $entrypoint)
-  user_id=$(echo $result | jq -r '.id')
+  user_id=$(echo $result | ${jq_cli} -r '.id')
 
   if [[ "$user_id" != "$user" ]]; then
     return 1
@@ -38,7 +38,7 @@ jenkins_check_job_exists() {
   result=$(jenkins_api $entrypoint)
   debug_output "result=\n----\n${result}\n----\n"
 
-  jobs=$(echo $result | jq -r '.jobs[] | .name')
+  jobs=$(echo $result | ${jq_cli} -r '.jobs[] | .name')
   debug_output "jobs=\n----\n${jobs}\n----\n"
   if [[ $jobs =~ "$jenkins_job_name" ]]; then
     debug_output "Job trouvé"
@@ -75,14 +75,14 @@ jenkins_api() {
   debug_output "api_url=${api_url}"
 
   if [[ "${verb}" == "POST" ]]; then
-    curl_cmd="curl -s -L --user ${user}:${pwd} ${base_url}crumbIssuer/api/json"
+    curl_cmd="${curl_cli} -s -L --user ${user}:${pwd} ${base_url}crumbIssuer/api/json"
     debug_output "curl_cmd=${curl_cmd}"
-    crumb="$(${curl_cmd} | jq -r '.crumbRequestField + ":" + .crumb')"
+    crumb="$(${curl_cmd} | ${jq_cli} -r '.crumbRequestField + ":" + .crumb')"
     debug_output "crumb=${crumb}"
     extra_curl_parameters="-H ${crumb} ${extra_curl_parameters}"
   fi
 
-  curl_cmd="curl -X ${verb} -s -L --user ${user}:${pwd} ${extra_curl_parameters} ${api_url}"
+  curl_cmd="${curl_cli} -X ${verb} -s -L --user ${user}:${pwd} ${extra_curl_parameters} ${api_url}"
   debug_output "curl_cmd=${curl_cmd}"
   result=$(${curl_cmd})
   return_code="$?"
