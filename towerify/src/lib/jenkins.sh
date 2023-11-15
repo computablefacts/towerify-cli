@@ -38,7 +38,7 @@ jenkins_check_job_exists() {
   result=$(jenkins_api $entrypoint)
   debug_output "result=\n----\n${result}\n----\n"
 
-  jobs=$(echo $result | ${jq_cli} -r '.jobs[] | .name')
+  jobs=$(echo $result | ${jq_cli:-jq} -r '.jobs[] | .name')
   debug_output "jobs=\n----\n${jobs}\n----\n"
   if [[ $jobs =~ "$jenkins_job_name" ]]; then
     debug_output "Job trouvé"

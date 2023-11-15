@@ -57,4 +57,25 @@ Describe 'jenkins.sh'
       The status should eq 1
     End
   End
+
+  Describe 'jenkins_check_job_exists()'
+
+    It 'should return true if the job exists'
+      jenkins_api() {
+        echo '{"jobs": [{"name": "my_job"}, {"name": "job2"}, {"name": "job3"}]}'
+      }
+
+      When call jenkins_check_job_exists "my_job"
+      The status should eq 0
+    End
+
+    It 'should return false if the job does NOT exist'
+      jenkins_api() {
+        echo '{"jobs": [{"name": "job1"}, {"name": "job2"}, {"name": "job3"}]}'
+      }
+
+      When call jenkins_check_job_exists "my_job"
+      The status should eq 1
+    End
+  End
 End
