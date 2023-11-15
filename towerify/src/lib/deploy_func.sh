@@ -19,7 +19,7 @@ towerify_deploy() {
   echo -n "Vérification du pipeline de déploiement... "
   jenkins_check_job_exists $jenkins_job_name
   return_code=$?
-  [[ $debug -eq 1 ]] && echo "jenkins_check_job_exists-return_code=$return_code" 1>&2
+  debug_output "jenkins_check_job_exists-return_code=$return_code"
   if [[ $return_code -ne 0 ]]; then
     # Le job n'existe pas
     echo "$(yellow "==> Pipeline non trouvé.")"

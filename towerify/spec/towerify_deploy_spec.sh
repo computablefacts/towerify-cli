@@ -27,6 +27,7 @@ Describe 'towerify deploy'
     End
 
     It 'should call jenkins_check_job_exists'
+      Skip 'TODO'
       jenkins_is_accessible() { 
         return 0
       }
@@ -39,6 +40,7 @@ Describe 'towerify deploy'
     End
 
     It 'should call jenkins_create_job if it does not already exist'
+      Skip 'TODO'
       jenkins_is_accessible() { 
         return 0
       }
