@@ -20,7 +20,7 @@ jenkins_is_accessible() {
   debug_output "entrypoint=$entrypoint"
 
   result=$(jenkins_api $entrypoint)
-  user_id=$(echo $result | ${jq_cli} -r '.id')
+  user_id=$(echo $result | ${jq_cli:-jq} -r '.id')
 
   if [[ "$user_id" != "$user" ]]; then
     return 1
@@ -54,11 +54,16 @@ jenkins_create_job() {
   app_type=${2}
 
   entrypoint="createItem?name=${jenkins_job_name}"
-  debug_output "entrypoint=${entrypoint}"
+  debug_output "entrypoint=${entrypoint}" "\n"
 
   result=$(jenkins_api "${entrypoint}" "POST" "-H Content-Type:application/xml --data-binary @../conf/templates/jenkins/static.xml")
-  debug_output "result=\n----\n${result}\n----\n"
+  return_code=$?
+  debug_output "jenkins_api return_code=${return_code}"
 
+  if [[ $return_code -ne 0 ]]; then
+    debug_output "result=\n----\n${result}\n----\n"
+    return 1
+  fi
 
   return 0
 }
@@ -85,7 +90,7 @@ jenkins_api() {
   curl_cmd="${curl_cli} -X ${verb} -s -L --user ${user}:${pwd} ${extra_curl_parameters} ${api_url}"
   debug_output "curl_cmd=${curl_cmd}"
   result=$(${curl_cmd})
-  return_code="$?"
+  return_code=$?
   debug_output "curl return_code=${return_code}"
 
   if [[ $return_code -ne 0 ]]; then

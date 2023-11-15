@@ -3,6 +3,16 @@ Describe 'jenkins.sh'
   Include src/lib/common.sh
   #Include src/lib/globals.sh
 
+  config_get() {
+    if [[ "$1" = "jenkins_domain" ]]; then
+      echo 'my.jenkins.domain'
+    elif [[ "$1" = "towerify_login" ]]; then
+      echo "login"
+    else
+      echo 'error: wrong key'
+    fi
+  }
+
   Describe 'is_json_valid()'
 
     It 'should return true (=0) when valid'
@@ -21,16 +31,30 @@ Describe 'jenkins.sh'
   Describe 'jenkins_base_url()'
 
     It 'should return the Jenkins URL'
-      config_get() {
-        if [[ "$1" = "jenkins_domain" ]]; then
-          echo 'my.jenkins.domain'
-        else
-          echo 'error: wrong key (jenkins_domain expected)'
-        fi
-      }
 
       When call jenkins_base_url
       The output should eq 'https://my.jenkins.domain/'
+    End
+  End
+
+  Describe 'jenkins_is_accessible()'
+
+    It 'should return true if Jenkins answers'
+      jenkins_api() {
+        echo '{"id": "login"}'
+      }
+
+      When call jenkins_is_accessible
+      The status should eq 0
+    End
+
+    It 'should return false if Jenkins does NOT answer'
+      jenkins_api() {
+        echo '{"id": "an_other_user"}'
+      }
+
+      When call jenkins_is_accessible
+      The status should eq 1
     End
   End
 End
