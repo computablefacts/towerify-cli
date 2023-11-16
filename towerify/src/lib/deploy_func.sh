@@ -1,6 +1,9 @@
 towerify_deploy() {
-  jenkins_job_name=${1}
-  app_type=${2}
+  app_name=${1} 
+  app_env=${2}
+  app_type=${3}
+
+  jenkins_job_name="${app_name}_${app_env}"
 
   debug_output "jenkins_job_name=${jenkins_job_name}"
   debug_output "app_type=${app_type}"
@@ -40,6 +43,13 @@ towerify_deploy() {
   echo "$(green_bold "==> Compression réussie.")"
 
   # Envoyer le ZIP au Job Jenkins
+  echo -n "Lancement du déploiement... "
+  if ! jenkins_build_job $jenkins_job_name $app_env; then
+    echo "$(red_bold "==> Lancement échoué.")"
+    exit 1
+  else
+    echo "$(green_bold "==> Déploiement en cours.")"
+  fi
 
   # Surveiller l'avancement du Job
 

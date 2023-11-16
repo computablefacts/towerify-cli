@@ -17,4 +17,4 @@ debug_output "app_name=${app_name}"
 debug_output "env=${env}"
 debug_output "app_type=${app_type}"
 
-towerify_deploy "${app_name}_${env}" ${app_type}
+towerify_deploy ${app_name} ${env} ${app_type}
