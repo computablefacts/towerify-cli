@@ -96,6 +96,7 @@ Describe 'jenkins.sh'
       The output should eq false
     End
   End
+
   Describe 'jenkins_create_job()'
     test_it() {
       #debug=1

@@ -59,12 +59,13 @@ jenkins_create_job() {
   entrypoint="createItem?name=${jenkins_job_name}"
   debug_output "entrypoint=${entrypoint}" "\n"
 
-  jenkins_template_file="${template_dir}/jenkins/${app_type}.xml"
+  jenkins_template_file="${SCRIPT_DIR:-.}/${template_dir}/jenkins/${app_type}.xml"
+  debug_output "jenkins_template_file=${jenkins_template_file}"
   if [[ ! -r $jenkins_template_file ]]; then
     echo "$(red_bold "Modèle de pipeline non trouvé.")" 1>&2
     false
   else
-    result=$(jenkins_api "${entrypoint}" "POST" "-H Content-Type:application/xml --data-binary @../conf/templates/jenkins/static.xml")
+    result=$(jenkins_api "${entrypoint}" "POST" "-H Content-Type:application/xml --data-binary @${jenkins_template_file}")
     return_code=$?
     debug_output "jenkins_api return_code=${return_code}"
 
