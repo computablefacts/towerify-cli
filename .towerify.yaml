@@ -1,0 +1,8 @@
+name: towerify-cli-install
+type: static
+config:
+  dockerfile: .towerify.Dockerfile
+  envs:
+    dev:
+      domain: acme.towerify.io
+      path: cli

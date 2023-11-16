@@ -11,3 +11,14 @@ cd ../towerify || exit
 bashly generate --env production
 
 cd ..
+
+mkdir -p ./site/towerify
+cp ./towerify/towerify ./site/towerify/towerify
+cp -R ./conf/templates ./site/towerify/templates
+
+cd ./site/towerify
+tar -czvf ../towerify.tar.gz .
+
+cd ../..
+rm -Rf ./site/towerify/
+cp ./install/install.sh ./site/install.sh
