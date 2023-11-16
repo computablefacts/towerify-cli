@@ -6,17 +6,6 @@ Describe 'towerify deploy'
 
   Path app-config-file="$app_config_file"
 
-  Describe 'with app initialised'
-    create_app_config() {
-      echo 'name: my-app' > $app_config_file
-      echo 'type: static' >> $app_config_file
-    }
-
-    Before 'create_app_config'
-
-  End
-
-
   Describe 'with no app initialised'
     remove_app_config() {
       if [[ -e $app_config_file ]]; then
