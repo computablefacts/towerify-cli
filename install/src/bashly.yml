@@ -1,4 +1,4 @@
-name: install
+name: install.sh
 help: Towerify CLI installation script
 version: 0.1.0
 
