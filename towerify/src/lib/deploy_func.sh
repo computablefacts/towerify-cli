@@ -31,13 +31,13 @@ towerify_deploy() {
     echo "$(green_bold "==> Pipeline trouvé.")"
   fi
   
-
-
-  # Si le job n'existe pas, demander confirmation pour la création
-  # => yes, créer le job (à partir d'un XML installé en même temps que towerify dans $0/../conf/templates/jenkins/<app_type>.xml)
-  # => no, arrêt de la commande
-
   # Zipper le répertoire
+  echo -n "Compression des fichiers de votre application... "
+  if ! app_compress; then
+    echo "$(red_bold "==> Compression échouée.")"
+    exit 1
+  fi
+  echo "$(green_bold "==> Compression réussie.")"
 
   # Envoyer le ZIP au Job Jenkins
 
