@@ -2,6 +2,9 @@ towerify_deploy() {
   jenkins_job_name=${1}
   app_type=${2}
 
+  debug_output "jenkins_job_name=${jenkins_job_name}"
+  debug_output "app_type=${app_type}"
+
   # Vérifier la connexion à Jenkins (le mettre dans un filtre Bashly ?)
   echo -n "Tentative de connexion à Towerify... "
   if ! jenkins_is_accessible; then

@@ -2,7 +2,8 @@ Describe 'jenkins.sh'
   Include src/lib/jenkins.sh
   Include src/lib/common.sh
   Include src/lib/colors.sh
-  #Include src/lib/globals.sh
+
+  declare -g template_dir="../conf/templates"
 
   config_get() {
     if [[ "$1" = "jenkins_domain" ]]; then
@@ -98,7 +99,7 @@ Describe 'jenkins.sh'
   Describe 'jenkins_create_job()'
     test_it() {
       #debug=1
-      if jenkins_create_job "my_job" "static"; then
+      if jenkins_create_job "my_job" ${1}; then
         echo "true"
       else
         echo "false"
@@ -110,7 +111,7 @@ Describe 'jenkins.sh'
         return 0
       }
 
-      When call test_it
+      When call test_it "static"
       The output should eq true
     End
 
@@ -119,8 +120,18 @@ Describe 'jenkins.sh'
         return 1
       }
 
-      When call test_it
+      When call test_it "static"
       The output should eq false
+    End
+
+    It 'should be false if the job template is NOT found'
+      jenkins_api() {
+        return 0
+      }
+
+      When call test_it "unknown"
+      The output should eq false
+      The error should include "Modèle de pipeline non trouvé"
     End
   End
 End
