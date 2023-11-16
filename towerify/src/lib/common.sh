@@ -3,5 +3,7 @@ display_question() {
 }
 
 debug_output() {
-  [[ $debug -eq 1 ]] && echo -e "$(cyan "${2:-}[DEBUG] ${FUNCNAME[1]}() ${1:-}")" 1>&2
+  if [[ $debug -eq 1 ]]; then
+    echo -e "$(cyan "${2:-}[DEBUG] ${FUNCNAME[1]}() ${1:-}")" 1>&2
+  fi
 }

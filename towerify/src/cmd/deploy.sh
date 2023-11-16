@@ -13,4 +13,8 @@ env=${args[--env]}
 app_name=$(app_config_get '.name')
 app_type=$(app_config_get '.type')
 
+debug_output "app_name=${app_name}"
+debug_output "env=${env}"
+debug_output "app_type=${app_type}"
+
 towerify_deploy "${app_name}_${env}" ${app_type}
