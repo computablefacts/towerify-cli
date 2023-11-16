@@ -1,3 +1,4 @@
 .towerify.yaml
 towerify
 .shellspec-quick.log
+*.tar.gz
