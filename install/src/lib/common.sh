@@ -21,18 +21,14 @@ error_already_installed() {
 }
 
 download_towerify() {
-  # Mock download by coping
-  cp ../towerify/towerify $1
-}
+  install_dir=$1
 
-install_succeeded() {
-  echo "$(green_bold "Towerify CLI est installé")"
-  echo
-  echo "Il est configuré pour l'instance $(bold "Towerify $1")"
-  echo
-  echo "Pour déployer votre première application, allez dans le répertoire de votre application et utilisez :"
-  echo "  $(bold "towerify init")"
-  echo
+  tempdirname=$(mktemp -d)
+  curl --progress-bar https://acme.towerify.io/cli/towerify.tar.gz | tar -zx -C $tempdirname
+
+  cp -R $tempdirname/* $install_dir
+
+  rm -Rf $tempdirname
 }
 
 display_question() {
