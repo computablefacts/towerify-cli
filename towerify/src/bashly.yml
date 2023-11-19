@@ -50,13 +50,27 @@ commands:
       allowed: [dev, staging, prod]
       default: dev
 
+- name: configure
+  help: Configure les paramètres d'accès à votre serveur Towerify
+
+  flags:
+    - *flag_debug
+    - long: --domain
+      arg: domain
+      help: Domaine du serveur Towerify
+    - long: --login
+      short: -l
+      arg: login
+      help: Login pour accéder au serveur Towerify
+    - long: --password
+      short: -p
+      arg: password
+      help: Mot de passe pour accéder au serveur Towerify
+
 dependencies:
   curl:
     command: [curl]
     help: run 'sudo apt-get install -y curl'
-  wget:
-    command: [wget]
-    help: run 'sudo apt-get install -y wget'
   jq:
     command: [jq]
     help: run 'sudo apt-get install -y jq'

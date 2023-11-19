@@ -111,14 +111,14 @@ jenkins_api() {
   debug_output "api_url=${api_url}"
 
   if [[ "${verb}" == "POST" ]]; then
-    curl_cmd="${curl_cli} -s -L --user ${user}:${pwd} ${base_url}crumbIssuer/api/json"
+    curl_cmd="${curl_cli:-curl} -s -L --user ${user}:${pwd} ${base_url}crumbIssuer/api/json"
     debug_output "curl_cmd=${curl_cmd}"
     crumb="$(${curl_cmd} | ${jq_cli} -r '.crumbRequestField + ":" + .crumb')"
     debug_output "crumb=${crumb}"
     extra_curl_parameters="-H ${crumb} ${extra_curl_parameters}"
   fi
 
-  curl_cmd="${curl_cli} -X ${verb} -s -L --user ${user}:${pwd} ${extra_curl_parameters} ${api_url}"
+  curl_cmd="${curl_cli:-curl} -X ${verb} -s -L --user ${user}:${pwd} ${extra_curl_parameters} ${api_url}"
   debug_output "curl_cmd=${curl_cmd}"
   result=$(${curl_cmd})
   return_code=$?

@@ -5,7 +5,8 @@ ask_password() {
 }
 
 ask_string() {
-  read -p "> " answer
+  default=${1:-}
+  read -e -p "> " -i "${default}" answer
   echo $answer
 }
 
