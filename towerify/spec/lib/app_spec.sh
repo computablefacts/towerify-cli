@@ -24,7 +24,7 @@ Describe 'app.sh'
       It 'should create the app.tar.gz archive'
 
         When call app_compress
-        The file "${app_config_dir}/app.tar.gz" should be file
+        The path "${app_config_dir}/app.tar.gz" should be file
       End
     End
 
