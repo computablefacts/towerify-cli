@@ -79,7 +79,7 @@ Describe 'towerify init'
     After 'remove_app_config'
 
     It 'should fail'
-      Skip "TODO"
+      Skip "Should test towerify init without calling the executable (call the towerify_init function)"
 
       When run towerify_init
       The status should eq 1
