@@ -19,7 +19,7 @@ Describe 'towerify deploy'
 
       When run source ./towerify deploy
       The status should eq 1
-      The stderr should include "Le fichier $app_config_file n'existe pas dans ce répertoire"
+      The stderr should include "Le fichier $app_config_dir/$app_config_file n'existe pas dans ce répertoire"
     End
   End
 End
