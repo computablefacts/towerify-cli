@@ -53,6 +53,33 @@ Describe 'towerify init'
       The output should be present
     End
 
+    It 'should initialise app laravel-10'
+      Data
+        #|my-app
+        #|2
+      End
+      
+      When run towerify_init
+      The line 1 of output should include 'Quel est le nom de votre application'
+      The line 3 of output should include "Choissisez un type d'application"
+      The stderr should be present # ask_choice()
+      The line 5 of output should include 'Application my-app initialisée'
+    End
+
+    It 'should create app laravel-10 config file'
+      Data
+        #|my-app
+        #|2
+      End
+      
+      When run towerify_init
+      The path app-config-file should be file
+      The line 1 of contents of file app-config-file should eq 'name: my-app'
+      The line 2 of contents of file app-config-file should eq 'type: laravel-10'
+      The stderr should be present # ask_choice()
+      The output should be present
+    End
+
     It 'should create a default .tarignore'
       Data
         #|my-app

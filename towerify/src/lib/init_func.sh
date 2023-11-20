@@ -24,7 +24,7 @@ towerify_init() {
   # Ask for type if needed
   if [[ "$type" = "ask" ]]; then
     display_question "Choissisez un type d'application"
-    type=$(ask_choices "static")
+    type=$(ask_choices "static" "laravel-10")
     echo
   fi
 
