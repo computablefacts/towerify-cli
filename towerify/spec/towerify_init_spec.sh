@@ -88,7 +88,8 @@ Describe 'towerify init'
       
       When run towerify_init
       The path "$app_config_dir/.tarignore" should be file
-      The line 1 of contents of file "$app_config_dir/.tarignore" should eq '.*'
+      The line 1 of contents of file "$app_config_dir/.tarignore" should start with '##'
+      The line 2 of contents of file "$app_config_dir/.tarignore" should eq '.?*/*'
       The stderr should be present # ask_choice()
       The output should be present
     End

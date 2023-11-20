@@ -10,10 +10,6 @@ Describe 'app.sh'
       rm "${app_config_dir}/.tarignore"
     fi
   }
-  create_tarignore() {
-    mkdir -p ${app_config_dir}
-    echo './spec' > ${app_config_dir}/.tarignore
-  }
 
 
   Describe 'app_compress'
@@ -28,19 +24,64 @@ Describe 'app.sh'
       End
     End
 
+#--no-wildcards-match-slash
 
-    Describe 'with .tarignore'
+    Describe 'with .tarignore (./spec)'
+      create_tarignore() {
+        mkdir -p ${app_config_dir}
+        echo './spec' > ${app_config_dir}/.tarignore
+      }
+
       Before 'create_tarignore'
       After 'delete_tarignore'
 
-      It 'should ignore files list in .tarignore'
+      It 'should ignore files in ./spec'
         
         list_files() {
           tar -tf ${app_config_dir}/app.tar.gz  
         }
 
         When call app_compress
-        The function list_file should not include './spec/'
+        The result of function list_files should not include './spec/'
+        The result of function list_files should include './src/'
+      End
+    End
+
+    Describe 'with .tarignore (.?*/*)'
+      create_test_files() {
+        mkdir -p .testtarignore
+        touch .testtarignore/test01
+        touch .testtarignore/.test02
+        touch test03
+        touch .test04
+      }
+      delete_test_files() {
+        rm -Rf .testtarignore/
+        rm -f test03
+        rm -f .test04
+      }      
+      create_tarignore() {
+        mkdir -p ${app_config_dir}
+        echo '.?*/*' > ${app_config_dir}/.tarignore
+      }
+
+      Before 'create_tarignore'
+      Before 'create_test_files'
+      After 'delete_test_files'
+      After 'delete_tarignore'
+
+      It 'should ignore files and directories starting with a dot'
+        
+        list_files() {
+          tar -tf ${app_config_dir}/app.tar.gz  
+        }
+
+        When call app_compress
+        The result of function list_files should not include './.testtarignore/test01'
+        The result of function list_files should not include './.testtarignore/.test02'
+        The result of function list_files should include './test03'
+        The result of function list_files should include './.test04'
+        The result of function list_files should include './src/'
       End
     End
   End

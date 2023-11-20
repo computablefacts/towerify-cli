@@ -38,7 +38,8 @@ towerify_init() {
 
   # Create a default .tarignore
   mkdir -p $app_config_dir
-  echo ".*" > $app_config_dir/.tarignore
+  echo "## ignore content of directories starting with a dot" > $app_config_dir/.tarignore
+  echo ".?*/*" >> $app_config_dir/.tarignore
 
   # Success
   echo "$(green_bold "Application $name initialisée")"
