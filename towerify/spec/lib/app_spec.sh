@@ -4,7 +4,6 @@ Describe 'app.sh'
   Include src/lib/app.sh
 
   declare -g app_config_dir="./towerify.shellspec"
-  #Path app-config-file=$app_config_file
 
   delete_tarignore() {
     if [[ -e "${app_config_dir}/.tarignore" ]]; then
