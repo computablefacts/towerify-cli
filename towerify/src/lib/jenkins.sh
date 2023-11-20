@@ -87,7 +87,7 @@ jenkins_build_job() {
 
   towerify_domain=$(config_get towerify_domain "not_found")
 
-  result=$(jenkins_api "${entrypoint}" "POST" "--form app.tar.gz=@app.tar.gz --form APP_ENV=${app_env} --form TOWERIFY_MAIN_DOMAIN=${towerify_domain}")
+  result=$(jenkins_api "${entrypoint}" "POST" "--form app.tar.gz=@${app_config_dir}/app.tar.gz --form APP_ENV=${app_env} --form TOWERIFY_MAIN_DOMAIN=${towerify_domain}")
   return_code=$?
   debug_output "jenkins_api return_code=${return_code}"
 
