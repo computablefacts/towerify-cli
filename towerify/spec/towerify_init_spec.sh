@@ -16,6 +16,12 @@ Describe 'towerify init'
     fi
   }
 
+  remove_all_config() {
+    rm -Rf $app_config_dir
+  }
+
+  Before 'remove_all_config'
+
   Describe 'with no app initialised'
 
     Before 'remove_app_config'
@@ -40,9 +46,22 @@ Describe 'towerify init'
       End
       
       When run towerify_init
-      The file app-config-file should be present
+      The path app-config-file should be file
       The line 1 of contents of file app-config-file should eq 'name: my-app'
       The line 2 of contents of file app-config-file should eq 'type: static'
+      The stderr should be present # ask_choice()
+      The output should be present
+    End
+
+    It 'should create a default .tarignore'
+      Data
+        #|my-app
+        #|1
+      End
+      
+      When run towerify_init
+      The path "$app_config_dir/.tarignore" should be file
+      The line 1 of contents of file "$app_config_dir/.tarignore" should eq '.*'
       The stderr should be present # ask_choice()
       The output should be present
     End

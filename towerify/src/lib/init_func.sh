@@ -36,6 +36,10 @@ towerify_init() {
   echo "name: $name" > $app_config_dir/$app_config_file
   echo "type: $type" >> $app_config_dir/$app_config_file
 
+  # Create a default .tarignore
+  mkdir -p $app_config_dir
+  echo ".*" > $app_config_dir/.tarignore
+
   # Success
   echo "$(green_bold "Application $name initialisée")"
   echo
