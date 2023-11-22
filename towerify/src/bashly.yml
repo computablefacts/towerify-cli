@@ -43,7 +43,8 @@ commands:
 
   flags:
     - *flag_debug
-    - long: --env
+    - &flag_env
+      long: --env
       short: -e
       arg: env
       help: Environnement
@@ -66,6 +67,55 @@ commands:
       short: -p
       arg: password
       help: Mot de passe pour accéder au serveur Towerify
+
+- name: secrets
+  help: Gère les variables d'environnement contenant des secrets (mot de passe, clé API, etc) pour votre application
+
+  filters:
+    - app_config_should_exist
+
+  commands:
+  - name: set
+    help: Ajoute un secret
+
+    args:
+      - name: key_value
+        help: Secret sous la forme KEY=value
+        required: true
+        validate: key_value
+
+    flags:
+      - *flag_debug
+      - *flag_env
+
+    examples:
+      - towerify secrets set DB_PASS=MyP0ssw@rd
+
+  - name: unset
+    help: Supprime un secret
+
+    args:
+      - name: key
+        help: Clé du secret à supprimer
+        required: true
+        validate: key
+
+    flags:
+      - *flag_debug
+      - *flag_env
+
+    examples:
+      - towerify secrets unset DB_PASS
+
+  - name: list
+    help: Liste les secrets
+
+    flags:
+      - *flag_debug
+      - *flag_env
+
+    examples:
+      - towerify secrets list
 
 dependencies:
   curl:
