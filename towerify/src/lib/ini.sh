@@ -1,4 +1,4 @@
-## INI functions [@bashly-upgrade ini]
+## INI functions - Modified by Patrick
 ## This file is a part of Bashly standard library
 ##
 ## Usage:
