@@ -68,7 +68,7 @@ ini_save() {
     [[ $key == *.* ]] && continue
     has_free_keys=true
     value="${ini[$key]}"
-    echo "$key = $value" >>"$ini_file"
+    echo "$key=$value" >>"$ini_file"
   done
 
   [[ "${has_free_keys}" == "true" ]] && echo >>"$ini_file"
@@ -84,7 +84,7 @@ ini_save() {
       current_section="$section_name"
     fi
     
-    echo "$key_name = $value" >>"$ini_file"
+    echo "$key_name=$value" >>"$ini_file"
   done
 }
 
@@ -93,7 +93,7 @@ ini_show() {
   declare -gA ini
 
   for key in $(ini_keys); do
-    echo "$key = ${ini[$key]}"
+    echo "$key=${ini[$key]}"
   done
 }
 
