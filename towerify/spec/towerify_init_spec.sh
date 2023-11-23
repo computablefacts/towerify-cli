@@ -94,24 +94,4 @@ Describe 'towerify init'
       The output should be present
     End
   End
-
-
-  Describe 'with app initialised'
-    create_app_config() {
-      mkdir -p $app_config_dir
-      echo 'name: my-app' > $app_config_fullname
-      echo 'type: static' >> $app_config_fullname
-    }
-
-    Before 'create_app_config'
-    After 'remove_app_config'
-
-    It 'should fail'
-      Skip "Should test towerify init without calling the executable (call the towerify_init function)"
-
-      When run towerify_init
-      The status should eq 1
-      The stderr should include "Le fichier $app_config_file existe déjà dans ce répertoire"
-    End
-  End
 End

@@ -1,4 +1,4 @@
-fDescribe 'validate.sh'
+Describe 'validate.sh'
   Include src/lib/validate.sh
 
   Describe 'validate_key_value'
