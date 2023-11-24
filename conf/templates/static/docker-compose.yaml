@@ -1,0 +1,11 @@
+version: "3"
+services:
+  static:
+    image: __DOCKER_IMAGE_NAME__:__DOCKER_IMAGE_TAG__
+    ports:
+    - target: 80
+      host_ip: 127.0.0.1
+      published: "__PORT__"
+      protocol: tcp
+      mode: host
+    restart: unless-stopped
