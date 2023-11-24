@@ -24,8 +24,6 @@ Describe 'app.sh'
       End
     End
 
-#--no-wildcards-match-slash
-
     Describe 'with .tarignore (./spec)'
       create_tarignore() {
         mkdir -p ${app_config_dir}
