@@ -200,6 +200,10 @@ pipeline {
                         sh &quot;sudo yunohost domain cert install ${towerify_app_domain}&quot;
                     }
 
+                    withCredentials([file(credentialsId: &quot;${towerify_app_id}&quot;, variable: &apos;envfile&apos;)]) {
+                        sh &quot;cp ${envfile} ./.env&quot;
+                    }
+
                     print &quot;APP_ENV=${APP_ENV}&quot;
                     print &quot;ENV_DOCKER_TAG=${env.ENV_DOCKER_TAG}&quot;
                     print &quot;towerify_app_id=${towerify_app_id}&quot;
@@ -213,6 +217,7 @@ pipeline {
                 checkout changelog: false, scm: scmGit(branches: [[name: &apos;*/main&apos;]], extensions: [[$class: &apos;RelativeTargetDirectory&apos;, relativeTargetDir: &quot;${TOWERIFY_APP_TEMPLATE_PATH}&quot;]], userRemoteConfigs: [[url: &apos;https://github.com/computablefacts/docker_compose_ynh&apos;]])
 
                 dir(TOWERIFY_APP_TEMPLATE_PATH) {
+                    sh &apos;cp ../.env ./conf/.env&apos;
                     sh &quot;cp ../${dockercompose_filename} ./conf/docker-compose.yaml&quot;
                     sh &quot;./customize.sh --app-id ${towerify_app_id} --name &apos;${towerify_app_name_short} ${APP_ENV}&apos; &quot;
                     sh &quot;sed -ri &apos;s#__DOCKER_IMAGE_NAME__#${docker_image_name}#&apos; ./conf/docker-compose.yaml&quot;
