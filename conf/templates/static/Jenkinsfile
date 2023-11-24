@@ -1,0 +1,204 @@
+// Global variables
+def app_config = null
+def dockerfile_filename = 'Dockerfile'
+def docker_image_name = null
+def docker_image_tag = null
+
+def dockercompose_filename = 'docker-compose.yaml'
+
+def app_type = 'static'
+
+pipeline {
+    agent any
+
+    options {
+        disableConcurrentBuilds()
+    }
+
+    parameters {
+        stashedFile 'app.tar.gz'
+        string(name: 'TOWERIFY_MAIN_DOMAIN', defaultValue: 'myapps.addapps.io', description: 'Your Towerify main domain name')
+        string(name: 'APP_ENV', defaultValue: 'dev', description: 'Environment where the application will be deployed')
+    }
+
+    environment {
+        ENV_DOCKER_TAG = "${APP_ENV}-latest"
+        TOWERIFY_APP_TEMPLATE_PATH = 'docker_compose_ynh'
+        DOCKER_REGISTRY_CRED_ID = 'docker-hub-cf-cred' // credential defined in Jenkins
+    }
+
+    stages {
+        stage('Get templates from git') {
+            steps {
+                checkout changelog: false, scm: scmGit(branches: [[name: '*/main']], extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'cli']], userRemoteConfigs: [[url: 'https://github.com/computablefacts/towerify-cli']])
+            }
+        }
+
+        stage('Uncompress') {
+            steps {
+                sh '''
+                    pwd
+                    ls -alh
+                    rm -Rf ./app
+                    mkdir -p ./app
+                '''
+                dir('app') {
+                    sh 'pwd'
+                    // TODO: use withFileParameter, see: https://www.jenkins.io/doc/pipeline/steps/file-parameters/#withfileparameter-bind-file-parameter
+                    /* groovylint-disable-next-line DuplicateStringLiteral */
+                    unstash 'app.tar.gz'
+                    sh '''
+                        ls -alh
+                        tar -xvf app.tar.gz
+                        ls -alh
+                    '''
+                }
+                sh 'ls -alh'
+            }
+        }
+
+        stage('Read config') {
+            steps {
+                script {
+                    app_config = readYaml file: 'app/towerify/config.yaml'
+                    app_name = app_config.get('name') && app_config.name ? app_config.name : null
+                    if (!app_name) {
+                        error 'Application name should be defined (key name:)'
+                    }
+                    echo "App name: ${app_name}"
+                    if (app_config.get('type') && app_config.type != "${app_type}") {
+                        error "Wrong app type (should be ${app_type})"
+                    }
+                }
+            }
+        }
+
+        stage('Prepare Dockerfile') {
+            steps {
+                script {
+                    // If a Dockerfile key exists in app_config
+                    if (app_config.get('config') && app_config.config.get('dockerfile')) {
+                        // we change the Dockerfile to use
+                        dockerfile_filename = 'app/' + app_config.config.dockerfile
+                    } else {
+                        // We use the default Dockerfile
+                        dockerfile_filename = "cli/conf/templates/${app_type}/Dockerfile"
+                    }
+
+                    echo "dockerfile_filename=${dockerfile_filename}"
+                    sh "cat ${dockerfile_filename}"
+
+                    docker_image_name = "computablefacts/${env.TOWERIFY_MAIN_DOMAIN}-${app_name}"
+                    docker_image_tag = sh(script: "echo twr-${env.BUILD_TAG} | sed -r 's#%2F#_#g'", returnStdout: true).trim()
+                    echo "image=${docker_image_name}:${docker_image_tag}"
+                }
+            }
+        }
+
+        stage('Prepare Docker Compose') {
+            steps {
+                script {
+                    // If a dockercomposefile key exists in app_config
+                    /* groovylint-disable-next-line DuplicateStringLiteral */
+                    if (app_config.get('config') && app_config.config.get('dockercomposefile')) {
+                        // we change the Docker Compose file to use
+                        /* groovylint-disable-next-line DuplicateStringLiteral */
+                        dockercompose_filename = 'app/' + app_config.config.dockercomposefile
+                    } else {
+                        // We use the default Docker Compose file
+                        dockercompose_filename = "cli/conf/templates/${app_type}/docker-compose.yaml"
+                    }
+
+                    echo "dockercompose_filename=${dockercompose_filename}"
+                    sh "cat ${dockercompose_filename}"
+                }
+            }
+        }
+
+        stage('Build Docker image') {
+            steps {
+                script {
+                    // Build...
+                    dockerImage = docker.build("${docker_image_name}", "-f ${dockerfile_filename} ./app")
+                    // .. and push to Docker Hub
+                    docker.withRegistry('', "${env.DOCKER_REGISTRY_CRED_ID}") {
+                        dockerImage.push("${docker_image_tag}")
+                    }
+                }
+            }
+        }
+
+        stage('Prepare Towerify App template') {
+            steps {
+                script {
+                    towerify_app_id = "${app_name}_${APP_ENV}"
+                    towerify_app_name_short = app_name.substring(0, 2)
+                    towerify_app_domain = "${APP_ENV}.${app_name}.${TOWERIFY_MAIN_DOMAIN}"
+                    towerify_app_path = '/'
+                    towerify_app_not_installed = sh(script: "sudo yunohost app list | grep ${towerify_app_id}", returnStatus: true)
+
+                    // Read app_config to change domain and path to publish app
+                    /* groovylint-disable-next-line DuplicateStringLiteral */
+                    app_config_env = app_config.get('config') && app_config.config.get('envs') && app_config.config.envs.get(APP_ENV)
+                        ? app_config.config.envs.get(APP_ENV)
+                        : null
+                    if (app_config_env) {
+                        echo 'Specific env settings are defined'
+                        towerify_app_domain = app_config_env.get('domain') ? app_config_env.domain : towerify_app_domain
+                        towerify_app_path = app_config_env.get('path') ? app_config_env.path : towerify_app_path
+                    }
+
+                    // Create domain (and LE certificate) on YunoHost if not already exists
+                    towerify_domain_not_exist = sh(script: "sudo yunohost domain list | grep ${towerify_app_domain}", returnStatus: true)
+                    if (towerify_domain_not_exist == 1) {
+                        sh "sudo yunohost domain add ${towerify_app_domain}"
+                        sh 'sudo yunohost diagnosis run web dnsrecords --force'
+                        sh "sudo yunohost domain cert install ${towerify_app_domain}"
+                    }
+
+                    print "APP_ENV=${APP_ENV}"
+                    print "ENV_DOCKER_TAG=${env.ENV_DOCKER_TAG}"
+                    print "towerify_app_id=${towerify_app_id}"
+                    print "towerify_app_name_short=${towerify_app_name_short}"
+                    print "towerify_app_domain=${towerify_app_domain}"
+                    print "towerify_app_path=${towerify_app_path}"
+                    print "towerify_app_not_installed=${towerify_app_not_installed}"
+                }
+
+                /* groovylint-disable-next-line DuplicateListLiteral, DuplicateMapLiteral, DuplicateStringLiteral */
+                checkout changelog: false, scm: scmGit(branches: [[name: '*/main']], extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${TOWERIFY_APP_TEMPLATE_PATH}"]], userRemoteConfigs: [[url: 'https://github.com/computablefacts/docker_compose_ynh']])
+
+                dir(TOWERIFY_APP_TEMPLATE_PATH) {
+                    sh "cp ../${dockercompose_filename} ./conf/docker-compose.yaml"
+                    sh "./customize.sh --app-id ${towerify_app_id} --name '${towerify_app_name_short} ${APP_ENV}' "
+                    sh "sed -ri 's#__DOCKER_IMAGE_NAME__#${docker_image_name}#' ./conf/docker-compose.yaml"
+                    sh "sed -ri 's/__DOCKER_IMAGE_TAG__/${docker_image_tag}/' ./conf/docker-compose.yaml"
+                }
+            }
+        }
+        stage('Towerify Publish') {
+            steps {
+                script {
+                    docker.withRegistry('', "${env.DOCKER_REGISTRY_CRED_ID}") {
+                        dockerImage.push("${env.ENV_DOCKER_TAG}")
+                    }
+                }
+                dir(TOWERIFY_APP_TEMPLATE_PATH) {
+                    script {
+                        if (towerify_app_not_installed == 1) {
+                            sh "sudo yunohost app install . --force --args=\"domain=${towerify_app_domain}&path=${towerify_app_path}&init_main_permission=visitors\" "
+                        } else {
+                            sh "sudo yunohost app upgrade ${towerify_app_id} --file . --force --no-safety-backup"
+                        }
+                    }
+                }
+            }
+        }
+    }
+    post {
+        // Clean after build
+        always {
+            cleanWs deleteDirs: true, disableDeferredWipeout: true, notFailBuild: true
+        }
+    }
+}
