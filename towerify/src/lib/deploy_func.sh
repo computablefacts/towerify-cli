@@ -34,6 +34,17 @@ towerify_deploy() {
     echo "$(green_bold "==> Pipeline trouvé.")"
   fi
   
+  # Envoyer les secrets
+  # Secret name = <app_name>_<env>
+  echo -n "Envoi des secrets ... "
+  if ! jenkins_send_secrets $jenkins_job_name; then
+    # Erreur
+    echo "$(red_bold "==> Création des secrets échouée.")"
+    exit 1
+  else
+    echo "$(green_bold "==> Secrets créés.")"
+  fi
+  
   # Zipper le répertoire
   echo -n "Compression des fichiers de votre application... "
   if ! app_compress; then

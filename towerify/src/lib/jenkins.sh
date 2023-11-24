@@ -78,6 +78,36 @@ jenkins_create_job() {
   fi
 }
 
+jenkins_send_secrets() {
+  jenkins_job_name=${1}
+
+  entrypoint="credentials/store/system/domain/_/createCredentials"
+  debug_output "entrypoint=${entrypoint}" "\n"
+
+  app_secret_file="${SCRIPT_DIR}/secrets/${jenkins_job_name}"
+  debug_output "app_secret_file=${app_secret_file}"
+
+  if [[ -f "${app_secret_file}" ]]; then
+    app_secret_file_json="${SCRIPT_DIR}/secrets/${jenkins_job_name}.json"
+    debug_output "app_secret_file_json=${app_secret_file_json}"
+
+    jq -n '{credentials: $ARGS.named}' --arg scope GLOBAL --arg file file0 --arg id ${jenkins_job_name} --arg \$class org.jenkinsci.plugins.plaincredentials.impl.FileCredentialsImpl > ${app_secret_file_json}
+
+    result=$(jenkins_api "${entrypoint}" "POST" "-H Accept:application/json --form file0=@${app_secret_file} --form json=@${app_secret_file_json}" "false")
+    return_code=$?
+    debug_output "jenkins_api return_code='${return_code}'"
+
+    if [[ $return_code -ne 0 ]]; then
+      debug_output "result=\n----\n${result}\n----\n"
+      false
+    else
+      true
+    fi
+  else
+    true
+  fi
+}
+
 jenkins_build_job() {
   jenkins_job_name=${1}
   app_env=${2}
@@ -103,6 +133,7 @@ jenkins_api() {
   entrypoint=${1:-}
   verb=${2:-GET}
   extra_curl_parameters=${3:-}
+  result_should_be_a_valid_json=${4:-true}
 
   base_url="$(jenkins_base_url)"
   api_url="${base_url}${entrypoint}"
@@ -131,16 +162,18 @@ jenkins_api() {
     exit 1
   fi
 
-  debug_output "result=\n----\n${result}\n----\n"
-  is_json_valid "${result}"
-  return_code=$?
-  debug_output "is_json_valid return_code=${return_code}"
+  if [[ "$result_should_be_a_valid_json" = "true" ]]; then
+    debug_output "result=\n----\n${result}\n----\n"
+    is_json_valid "${result}"
+    return_code=$?
+    debug_output "is_json_valid return_code=${return_code}"
 
-  if [[ return_code -ne 0 ]]; then
-    # User is NOT connected
-    echo "$(red_bold "==> Connexion échouée.")" 1>&2
-    echo "Verifiez vos informations de connexion à Towerify." 1>&2
-    exit 1
+    if [[ return_code -ne 0 ]]; then
+      # User is NOT connected
+      echo "$(red_bold "==> Connexion échouée.")" 1>&2
+      echo "Verifiez vos informations de connexion à Towerify." 1>&2
+      exit 1
+    fi
   fi
 
   echo "${result}"
