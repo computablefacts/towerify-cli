@@ -98,6 +98,11 @@ Describe 'jenkins.sh'
   End
 
   Describe 'jenkins_create_job()'
+    Parameters
+      'static'
+      'laravel-10'
+    End
+
     test_it() {
       #debug=1
       if jenkins_create_job "my_job" ${1}; then
@@ -107,21 +112,21 @@ Describe 'jenkins.sh'
       fi
     }
 
-    It 'should be true if the job is created'
+    It "should be true if the job is created ($1)"
       jenkins_api() {
         return 0
       }
 
-      When call test_it "static"
+      When call test_it "$1"
       The output should eq true
     End
 
-    It 'should be false if the job is NOT created'
+    It "should be false if the job is NOT created ($1)"
       jenkins_api() {
         return 1
       }
 
-      When call test_it "static"
+      When call test_it "$1"
       The output should eq false
     End
 
