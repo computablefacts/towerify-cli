@@ -66,4 +66,9 @@ towerify_deploy() {
 
   # Afficher Success ou Failure
   # Afficher l'URL permettant d'aller voir les logs dans Jenkins
+
+  # Renomme le tar.gz avec un timestamp
+  tar_timestamp=$(date +%Y%m%d-%H%M%S)
+  mv ${app_config_dir}/app.tar.gz ${app_config_dir}/app.${tar_timestamp}.tar.gz
+  echo "Application compressée dans ${app_config_dir}/app.${tar_timestamp}.tar.gz"
 }
