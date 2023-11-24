@@ -1,4 +1,4 @@
-fDescribe 'towerify init'
+Describe 'towerify init'
   Include src/lib/globals.sh
   Include src/lib/filters.sh
   Include src/lib/common.sh
@@ -6,6 +6,7 @@ fDescribe 'towerify init'
   Include src/lib/ask.sh
   Include src/lib/init_func.sh
 
+  declare -g template_dir="../conf/templates"
   declare -g app_config_dir="./towerify.shellspec"
   app_config_fullname="$app_config_dir/$app_config_file"
   Path app-config-file=$app_config_fullname
@@ -32,7 +33,7 @@ fDescribe 'towerify init'
     End
 
 
-    It "should initialise app static ($1)"
+    It "should initialise app ($1)"
       Data:expand
         #|$2
         #|$3
@@ -45,7 +46,7 @@ fDescribe 'towerify init'
       The line 5 of output should include "Application $2 initialisée"
     End
 
-    It 'should create app static config file'
+    It "should create app config file ($1)"
       Data:expand
         #|$2
         #|$3
@@ -59,17 +60,27 @@ fDescribe 'towerify init'
       The output should be present
     End
 
-    It 'should create a default .tarignore'
-      Data
-        #|my-app
-        #|1
-      End
-      
-      When run towerify_init
+    It "should create a default .tarignore ($1)"
+
+      template_for() {
+        cat "$template_dir/$1/.tarignore"
+      }
+
+      When run towerify_init "$2" "$1"
       The path "$app_config_dir/.tarignore" should be file
-      The line 1 of contents of file "$app_config_dir/.tarignore" should start with '##'
-      The line 2 of contents of file "$app_config_dir/.tarignore" should eq '.?*/*'
-      The stderr should be present # ask_choice()
+      The contents of file "$app_config_dir/.tarignore" should eq "$(template_for $1)"
+      The output should be present
+    End
+
+    It "should create a default .gitignore ($1)"
+
+      template_for() {
+        cat "$template_dir/$1/.gitignore"
+      }
+
+      When run towerify_init "$2" "$1"
+      The path "$app_config_dir/.gitignore" should be file
+      The contents of file "$app_config_dir/.gitignore" should eq "$(template_for $1)"
       The output should be present
     End
   End
