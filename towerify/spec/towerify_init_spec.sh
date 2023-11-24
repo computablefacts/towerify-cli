@@ -1,4 +1,4 @@
-Describe 'towerify init'
+fDescribe 'towerify init'
   Include src/lib/globals.sh
   Include src/lib/filters.sh
   Include src/lib/common.sh
@@ -26,56 +26,35 @@ Describe 'towerify init'
 
     Before 'remove_app_config'
 
-    It 'should initialise app static'
-      Data
-        #|my-app
-        #|1
+    Parameters
+      'static' 'my-app-static' '1'
+      'laravel-10' 'my-app-l10' '2'
+    End
+
+
+    It "should initialise app static ($1)"
+      Data:expand
+        #|$2
+        #|$3
       End
       
       When run towerify_init
       The line 1 of output should include 'Quel est le nom de votre application'
       The line 3 of output should include "Choissisez un type d'application"
       The stderr should be present # ask_choice()
-      The line 5 of output should include 'Application my-app initialisée'
+      The line 5 of output should include "Application $2 initialisée"
     End
 
     It 'should create app static config file'
-      Data
-        #|my-app
-        #|1
+      Data:expand
+        #|$2
+        #|$3
       End
       
       When run towerify_init
       The path app-config-file should be file
-      The line 1 of contents of file app-config-file should eq 'name: my-app'
-      The line 2 of contents of file app-config-file should eq 'type: static'
-      The stderr should be present # ask_choice()
-      The output should be present
-    End
-
-    It 'should initialise app laravel-10'
-      Data
-        #|my-app
-        #|2
-      End
-      
-      When run towerify_init
-      The line 1 of output should include 'Quel est le nom de votre application'
-      The line 3 of output should include "Choissisez un type d'application"
-      The stderr should be present # ask_choice()
-      The line 5 of output should include 'Application my-app initialisée'
-    End
-
-    It 'should create app laravel-10 config file'
-      Data
-        #|my-app
-        #|2
-      End
-      
-      When run towerify_init
-      The path app-config-file should be file
-      The line 1 of contents of file app-config-file should eq 'name: my-app'
-      The line 2 of contents of file app-config-file should eq 'type: laravel-10'
+      The line 1 of contents of file app-config-file should eq "name: $2"
+      The line 2 of contents of file app-config-file should eq "type: $1"
       The stderr should be present # ask_choice()
       The output should be present
     End
