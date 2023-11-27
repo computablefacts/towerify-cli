@@ -59,7 +59,7 @@ jenkins_create_job() {
   entrypoint="createItem?name=${jenkins_job_name}"
   debug_output "entrypoint=${entrypoint}" "\n"
 
-  jenkins_template_file="${SCRIPT_DIR:-.}/${template_dir}/${app_type}/jenkins.xml"
+  jenkins_template_file="${template_dir}/${app_type}/jenkins.xml"
   debug_output "jenkins_template_file=${jenkins_template_file}"
   if [[ ! -r $jenkins_template_file ]]; then
     echo "$(red_bold "Modèle de pipeline non trouvé.")" 1>&2

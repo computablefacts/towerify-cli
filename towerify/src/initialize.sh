@@ -19,3 +19,5 @@ SCRIPT_DIR=$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )
 if [[ -f "$SCRIPT_DIR/config.ini" ]]; then
   CONFIG_FILE="$SCRIPT_DIR/config.ini"
 fi
+
+declare -g template_dir="$SCRIPT_DIR/templates"

@@ -36,6 +36,8 @@ towerify_init() {
   echo "name: $name" > $app_config_dir/$app_config_file
   echo "type: $type" >> $app_config_dir/$app_config_file
 
+  debug_output "template_dir=$template_dir"
+
   # Create a default .tarignore
   cp ${template_dir}/${type}/.tarignore $app_config_dir/.tarignore
 
