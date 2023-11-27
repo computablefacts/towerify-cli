@@ -20,6 +20,7 @@ Describe 'app_config.sh'
 
   Describe 'app_config_get'
     create_app_config() {
+      mkdir -p ${app_config_dir}
       echo 'name: my-app' > $app_config_fullname
       echo 'type: static' >> $app_config_fullname
       echo 'config:' >> $app_config_fullname
