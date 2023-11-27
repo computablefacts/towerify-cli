@@ -78,6 +78,29 @@ jenkins_create_job() {
   fi
 }
 
+jenkins_secrets_already_exists() {
+  local readonly jenkins_job_name=${1}
+
+  local readonly base_url="$(jenkins_base_url)"
+  local readonly secret_url="${base_url}manage/credentials/store/system/domain/_/credential/${jenkins_job_name}/"
+  debug_output "secret_url=${secret_url}"
+
+  local readonly user=$(config_get towerify_login "not_found")
+  local readonly pwd=$(config_get towerify_password "not_found")
+
+  curl_cmd="${curl_cli:-curl} --output /dev/null --silent --head --fail --user ${user}:${pwd} ${secret_url}"
+  debug_output "curl_cmd=${curl_cmd}"
+  result=$(${curl_cmd})
+  return_code=$?
+  debug_output "curl return_code=${return_code}"
+
+  if [[ $return_code -eq 0 ]]; then
+    true
+  else
+    false
+  fi
+}
+
 jenkins_send_secrets() {
   jenkins_job_name=${1}
 
@@ -87,7 +110,27 @@ jenkins_send_secrets() {
   app_secret_file="${SCRIPT_DIR}/secrets/${jenkins_job_name}"
   debug_output "app_secret_file=${app_secret_file}"
 
+  ## Send secrets only if a secret file is found locally
   if [[ -f "${app_secret_file}" ]]; then
+
+    ## Check if secret file already exists in Jenkins
+    if jenkins_secrets_already_exists $jenkins_job_name; then
+      echo -n "Les secrets existent déjà. " 1>&2
+      result=$(jenkins_api "/manage/credentials/store/system/domain/_/credential/${jenkins_job_name}/doDelete" "POST" "-H Accept:application/json" "false")
+      return_code=$?
+      debug_output "jenkins_api return_code='${return_code}'"
+
+      if [[ $return_code -eq 0 ]]; then
+        echo "$(green_bold "==> secrets effacés.")" 1>&2
+      else
+        debug_output "result=\n----\n${result}\n----\n"
+        echo "$(red_bold "==> impossible de supprimer les secrets.")" 1>&2
+        exit 1
+      fi
+    else
+      echo "Les secrets n'existent pas." 1>&2
+    fi
+
     app_secret_file_json="${SCRIPT_DIR}/secrets/${jenkins_job_name}.json"
     debug_output "app_secret_file_json=${app_secret_file_json}"
 
