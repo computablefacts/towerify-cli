@@ -85,7 +85,7 @@ Describe 'towerify init'
     End
   End
 
-  Describe 'missing template'
+  Describe 'missing tarignore template'
     remove_tarignore_template() {
       mv "$template_dir/static/.tarignore" "$template_dir/static/.tarignore.old"
     }
@@ -100,6 +100,25 @@ Describe 'towerify init'
 
       When run towerify_init 'my-app' 'static'
       The path "$app_config_dir/.tarignore" should not be file
+      The output should be present
+    End
+  End
+
+  Describe 'missing gitignore template'
+    remove_gitignore_template() {
+      mv "$template_dir/static/.gitignore" "$template_dir/static/.gitignore.old"
+    }
+    restore_gitignore_template() {
+      mv "$template_dir/static/.gitignore.old" "$template_dir/static/.gitignore"
+    }
+
+    Before 'remove_gitignore_template'
+    After 'restore_gitignore_template'
+
+    It 'should not fail if no .gitignore exist'
+
+      When run towerify_init 'my-app' 'static'
+      The path "$app_config_dir/.gitignore" should not be file
       The output should be present
     End
   End

@@ -44,7 +44,9 @@ towerify_init() {
   fi
 
   # Create a default .gitignore
-  cp ${template_dir}/${type}/.gitignore $app_config_dir/.gitignore
+  if [[ -f "${template_dir}/${type}/.gitignore" ]]; then
+    cp ${template_dir}/${type}/.gitignore $app_config_dir/.gitignore
+  fi
 
   # Success
   echo "$(green_bold "Application $name initialisée")"
