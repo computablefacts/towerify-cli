@@ -84,4 +84,23 @@ Describe 'towerify init'
       The output should be present
     End
   End
+
+  Describe 'missing template'
+    remove_tarignore_template() {
+      mv "$template_dir/static/.tarignore" "$template_dir/static/.tarignore.old"
+    }
+    restore_tarignore_template() {
+      mv "$template_dir/static/.tarignore.old" "$template_dir/static/.tarignore"
+    }
+
+    Before 'remove_tarignore_template'
+    After 'restore_tarignore_template'
+
+    It 'should not fail if no .tarignore exist'
+
+      When run towerify_init 'my-app' 'static'
+      The path "$app_config_dir/.tarignore" should not be file
+      The output should be present
+    End
+  End
 End

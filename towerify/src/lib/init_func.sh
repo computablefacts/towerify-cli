@@ -39,7 +39,9 @@ towerify_init() {
   debug_output "template_dir=$template_dir"
 
   # Create a default .tarignore
-  cp ${template_dir}/${type}/.tarignore $app_config_dir/.tarignore
+  if [[ -f "${template_dir}/${type}/.tarignore" ]]; then
+    cp "${template_dir}/${type}/.tarignore" "${app_config_dir}/.tarignore"
+  fi
 
   # Create a default .gitignore
   cp ${template_dir}/${type}/.gitignore $app_config_dir/.gitignore
