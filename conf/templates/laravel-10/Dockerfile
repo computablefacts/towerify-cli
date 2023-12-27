@@ -59,12 +59,6 @@ COPY --chown=www-data:www-data --from=vendor /app/vendor/ /var/www/html/vendor/
 # Add npm dependencies
 COPY --chown=www-data:www-data --from=frontend /app/public/build/ /var/www/html/public/build/
 
-# Rights on directories and files
-# RUN chown -R www-data:www-data /var/www/html \
-#     && find /var/www/html -type f -exec chmod 644 {} \; \
-#     && find /var/www/html -type d -exec chmod 755 {} \; \
-#     && chmod -R ug+rwx /var/www/html/storage /var/www/html/bootstrap/cache
-
 RUN chmod -R ug+rwx /var/www/html/storage /var/www/html/bootstrap/cache
 
 COPY <<-EOT /etc/apache2/sites-available/laravel.conf
@@ -79,15 +73,6 @@ EOT
 RUN a2dissite 000-default.conf \
     && a2enmod rewrite \
     && a2ensite laravel.conf
-
-
-# # Optimizing Configuration loading
-# RUN php artisan config:cache
-# # Optimizing Route loading
-# RUN php artisan route:cache
-# # Optimizing View loading
-# RUN php artisan view:cache
-
 
 
 # Start script
