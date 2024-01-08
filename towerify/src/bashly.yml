@@ -76,6 +76,7 @@ commands:
 
   commands:
   - name: set
+    alias: add
     help: Ajoute un secret
 
     args:
@@ -92,6 +93,7 @@ commands:
       - towerify secrets set DB_PASS=MyP0ssw@rd
 
   - name: unset
+    alias: [remove, rm]
     help: Supprime un secret
 
     args:
