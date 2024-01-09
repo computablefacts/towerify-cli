@@ -24,10 +24,10 @@ jenkins_is_accessible() {
   debug_output "user_id=$user_id"
 
   if [[ "$user_id" != "$user" ]]; then
-    debug_output "Jenkins est accessible"
+    debug_output "Jenkins n'est pas accessible"
     false
   else
-    debug_output "Jenkins n'est pas accessible"
+    debug_output "Jenkins est accessible"
     true
   fi
 }
