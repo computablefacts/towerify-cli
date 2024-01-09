@@ -13,7 +13,7 @@ Describe 'towerify configure'
 
 #  debug=1
 
-  It "should configure Towerify"
+  It "should ask for domain, login and password"
     jenkins_is_accessible() {
       true
     }
@@ -36,6 +36,23 @@ Describe 'towerify configure'
     The line 2 of contents of file towerify-config-file should eq 'towerify_domain=my-corp.towerify.io'
     The line 3 of contents of file towerify-config-file should eq 'towerify_login=my_login'
     The line 4 of contents of file towerify-config-file should eq 'towerify_password=MyP@ssw0rD'
+  End
+
+  It "should use parameters for domain, login and password"
+#    debug=1
+    jenkins_is_accessible() {
+      true
+    }
+
+    When run towerify_configure 'my-corp2.towerify.io' 'my_login2' 'MyP@ssw0rD2'
+#    Dump
+    The line 4 of output should include 'Towerify CLI est correctement configuré'
+    The line 4 of output should include 'instance Towerify my-corp2.towerify.io'
+    The path towerify-config-file should be file
+    The line 1 of contents of file towerify-config-file should eq 'jenkins_domain=jenkins.my-corp2.towerify.io'
+    The line 2 of contents of file towerify-config-file should eq 'towerify_domain=my-corp2.towerify.io'
+    The line 3 of contents of file towerify-config-file should eq 'towerify_login=my_login2'
+    The line 4 of contents of file towerify-config-file should eq 'towerify_password=MyP@ssw0rD2'
   End
 
 End
