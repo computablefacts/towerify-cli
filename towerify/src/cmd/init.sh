@@ -1,10 +1,12 @@
+set_debug() {
+  debug=$1
+}
+
 # Paramétrage
-debug=${args[--debug]:-0}
+set_debug ${args[--debug]:-0}
+[[ $debug -eq 1 ]] && inspect_args
 name=${args[name]:-ask}
 type=${args[type]:-ask}
 force=${args[--force]:-0}
-
-# Debug arguments
-[[ $debug -eq 1 ]] && inspect_args
 
 towerify_init $name $type $force
