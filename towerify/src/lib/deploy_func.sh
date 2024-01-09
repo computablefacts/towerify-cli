@@ -2,11 +2,27 @@ towerify_deploy() {
   app_name=${1} 
   app_env=${2}
   app_type=${3}
+  profile=${4:-default}
+
+  debug_output "app_name=${app_name}"
+  debug_output "app_env=${app_env}"
+  debug_output "app_type=${app_type}"
+  debug_output "profile=${profile}"
 
   jenkins_job_name="${app_name}_${app_env}"
-
   debug_output "jenkins_job_name=${jenkins_job_name}"
-  debug_output "app_type=${app_type}"
+
+  # Read Jenkins configuration
+  debug_output "CONFIG_FILE=$CONFIG_FILE"
+  towerify_domain=$(config_get "${profile}.towerify_domain" "not_found")
+  jenkins_domain=$(config_get "${profile}.jenkins_domain" "not_found")
+  towerify_login=$(config_get "${profile}.towerify_login" "not_found")
+  towerify_password=$(config_get "${profile}.towerify_password" "not_found")
+
+  debug_output "towerify_domain=${towerify_domain}"
+  debug_output "jenkins_domain=${jenkins_domain}"
+  debug_output "towerify_login=${towerify_login}"
+  debug_output "towerify_password=${towerify_password}"
 
   # Vérifier la connexion à Jenkins (le mettre dans un filtre Bashly ?)
   echo -n "Tentative de connexion à Towerify... "

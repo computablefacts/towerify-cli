@@ -4,16 +4,8 @@ Describe 'jenkins.sh'
   Include src/lib/colors.sh
 
   declare -g template_dir="../conf/templates"
-
-  config_get() {
-    if [[ "$1" = "jenkins_domain" ]]; then
-      echo 'my.jenkins.domain'
-    elif [[ "$1" = "towerify_login" ]]; then
-      echo "login"
-    else
-      echo 'error: wrong key'
-    fi
-  }
+  declare -g jenkins_domain='my.jenkins.domain'
+  declare -g towerify_login=my_login
 
   Describe 'is_json_valid()'
 
@@ -35,6 +27,7 @@ Describe 'jenkins.sh'
     It 'should return the Jenkins URL'
 
       When call jenkins_base_url
+      #Dump
       The output should eq 'https://my.jenkins.domain/'
     End
   End
@@ -51,7 +44,7 @@ Describe 'jenkins.sh'
 
     It 'should be true if Jenkins answers'
       jenkins_api() {
-        echo '{"id": "login"}'
+        echo '{"id": "my_login"}'
       }
 
       When call test_it

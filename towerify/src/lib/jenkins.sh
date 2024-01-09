@@ -7,23 +7,18 @@ is_json_valid() {
 
 
 jenkins_base_url() {
-  debug_output "CONFIG_FILE=$CONFIG_FILE"
-
-  jenkins_domain=$(config_get jenkins_domain "not_found")
   echo "https://${jenkins_domain}/"
 }
 
 jenkins_is_accessible() {
-  user=$(config_get towerify_login "not_found")
-  entrypoint="user/${user}/api/json"
-  debug_output "user=$user" "\n"
+  entrypoint="user/${towerify_login}/api/json"
   debug_output "entrypoint=$entrypoint"
 
   result=$(jenkins_api $entrypoint)
   user_id=$(echo $result | ${jq_cli:-jq} -r '.id')
   debug_output "user_id=$user_id"
 
-  if [[ "$user_id" != "$user" ]]; then
+  if [[ "$user_id" != "$towerify_login" ]]; then
     debug_output "Jenkins n'est pas accessible"
     false
   else
@@ -85,10 +80,7 @@ jenkins_secrets_already_exists() {
   local readonly secret_url="${base_url}manage/credentials/store/system/domain/_/credential/${jenkins_job_name}/"
   debug_output "secret_url=${secret_url}"
 
-  local readonly user=$(config_get towerify_login "not_found")
-  local readonly pwd=$(config_get towerify_password "not_found")
-
-  curl_cmd="${curl_cli:-curl} --output /dev/null --silent --head --fail --user ${user}:${pwd} ${secret_url}"
+  curl_cmd="${curl_cli:-curl} --output /dev/null --silent --head --fail --user ${towerify_login}:${towerify_password} ${secret_url}"
   debug_output "curl_cmd=${curl_cmd}"
   result=$(${curl_cmd})
   return_code=$?
@@ -158,8 +150,6 @@ jenkins_build_job() {
   entrypoint="job/${jenkins_job_name}/buildWithParameters"
   debug_output "entrypoint=${entrypoint}" "\n"
 
-  towerify_domain=$(config_get towerify_domain "not_found")
-
   result=$(jenkins_api "${entrypoint}" "POST" "--form app.tar.gz=@${app_config_dir}/app.tar.gz --form APP_ENV=${app_env} --form TOWERIFY_MAIN_DOMAIN=${towerify_domain}")
   return_code=$?
   debug_output "jenkins_api return_code=${return_code}"
@@ -180,19 +170,17 @@ jenkins_api() {
 
   base_url="$(jenkins_base_url)"
   api_url="${base_url}${entrypoint}"
-  user=$(config_get towerify_login "not_found")
-  pwd=$(config_get towerify_password "not_found")
   debug_output "api_url=${api_url}"
 
   if [[ "${verb}" == "POST" ]]; then
-    curl_cmd="${curl_cli:-curl} -s -L --user ${user}:${pwd} ${base_url}crumbIssuer/api/json"
+    curl_cmd="${curl_cli:-curl} -s -L --user ${towerify_login}:${towerify_password} ${base_url}crumbIssuer/api/json"
     debug_output "curl_cmd=${curl_cmd}"
     crumb="$(${curl_cmd} | ${jq_cli} -r '.crumbRequestField + ":" + .crumb')"
     debug_output "crumb=${crumb}"
     extra_curl_parameters="-H ${crumb} ${extra_curl_parameters}"
   fi
 
-  curl_cmd="${curl_cli:-curl} -X ${verb} -s -L --user ${user}:${pwd} ${extra_curl_parameters} ${api_url}"
+  curl_cmd="${curl_cli:-curl} -X ${verb} -s -L --user ${towerify_login}:${towerify_password} ${extra_curl_parameters} ${api_url}"
   debug_output "curl_cmd=${curl_cmd}"
   result=$(${curl_cmd})
   return_code=$?

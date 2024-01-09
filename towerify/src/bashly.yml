@@ -49,6 +49,7 @@ commands:
 
   flags:
     - *flag_debug
+    - *flag_profile
     - &flag_env
       long: --env
       short: -e
