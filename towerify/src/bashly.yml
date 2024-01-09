@@ -8,6 +8,12 @@ flags:
     short: -d
     help: Mode DEBUG
 
+  - &flag_profile
+    long: --profile 
+    help: Nom du profil de connexion à utiliser
+    arg: profile
+    default: default
+
 commands:
 - name: init
   help: |-
@@ -56,6 +62,7 @@ commands:
 
   flags:
     - *flag_debug
+    - *flag_profile
     - long: --domain
       arg: domain
       help: Domaine du serveur Towerify
