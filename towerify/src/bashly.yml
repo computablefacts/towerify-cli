@@ -1,6 +1,6 @@
 name: towerify
 help: Towerify CLI. See https://docs.towerify.io/cli/
-version: 0.2.0
+version: 0.3.1
 
 flags:
   - &flag_debug
@@ -32,6 +32,20 @@ commands:
       short: -p
       arg: password
       help: Mot de passe pour accéder au serveur Towerify
+
+
+- name: update
+  help: Met à jour Towerify CLI avec la dernière version disponible
+
+  flags:
+    - *flag_debug
+    - long: --force
+      short: -f
+      help: Force la mise à jour même si la dernière version disponible n'est pas plus récente que la version installée
+
+  examples:
+    - towerify update
+    - towerify update --force
 
 
 - name: init

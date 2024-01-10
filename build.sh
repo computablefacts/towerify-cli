@@ -20,5 +20,6 @@ cd ./site/towerify
 tar -czvf ../towerify.tar.gz .
 
 cd ../..
+./site/towerify/towerify --version > ./site/version.txt
 rm -Rf ./site/towerify/
 cp ./install/install.sh ./site/install.sh
