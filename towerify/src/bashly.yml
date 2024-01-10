@@ -15,6 +15,25 @@ flags:
     default: default
 
 commands:
+- name: configure
+  help: Configure les paramètres d'accès à votre serveur Towerify
+
+  flags:
+    - *flag_debug
+    - *flag_profile
+    - long: --domain
+      arg: domain
+      help: Domaine du serveur Towerify
+    - long: --login
+      short: -l
+      arg: login
+      help: Login pour accéder au serveur Towerify
+    - long: --password
+      short: -p
+      arg: password
+      help: Mot de passe pour accéder au serveur Towerify
+
+
 - name: init
   help: |-
     Initialise une nouvelle application
@@ -58,23 +77,6 @@ commands:
       allowed: [dev, staging, prod]
       default: dev
 
-- name: configure
-  help: Configure les paramètres d'accès à votre serveur Towerify
-
-  flags:
-    - *flag_debug
-    - *flag_profile
-    - long: --domain
-      arg: domain
-      help: Domaine du serveur Towerify
-    - long: --login
-      short: -l
-      arg: login
-      help: Login pour accéder au serveur Towerify
-    - long: --password
-      short: -p
-      arg: password
-      help: Mot de passe pour accéder au serveur Towerify
 
 - name: secrets
   help: Gère les variables d'environnement contenant des secrets (mot de passe, clé API, etc) pour votre application
