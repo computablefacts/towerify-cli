@@ -40,9 +40,12 @@ towerify_update() {
       echo "  $(bold "towerify update --force")"
       exit 1
     fi
+
+    echo "$(bold "Mise à jour de Towerify CLI vers la version ${new_version}...")"
+  else
+    echo "$(bold "Mise à jour forcée de Towerify CLI pour la version ${version}...")"
   fi
 
-  echo "$(bold "Mise à jour de Towerify CLI...")"
   download_towerify $install_dir
   echo "$(bold "Terminé.")"
 
