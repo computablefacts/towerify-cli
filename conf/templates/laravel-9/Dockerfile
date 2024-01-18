@@ -45,6 +45,7 @@ MAINTAINER Patrick Brisacier <pbrisacier@mncc.fr>
 COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
 RUN install-php-extensions \
         intl \
+        pcntl \
         pdo_mysql \
         pdo_pgsql \
         exif \
