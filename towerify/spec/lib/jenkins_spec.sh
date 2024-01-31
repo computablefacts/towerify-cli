@@ -123,14 +123,13 @@ Describe 'jenkins.sh'
       The output should eq false
     End
 
-    It 'should be false if the job template is NOT found'
+    It 'should be true if the job template is NOT found for the type, we use the default one'
       jenkins_api() {
         return 0
       }
 
       When call test_it "unknown"
-      The output should eq false
-      The error should include "Modèle de pipeline non trouvé"
+      The output should eq true
     End
   End
 End
