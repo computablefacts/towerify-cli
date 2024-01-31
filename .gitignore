@@ -2,3 +2,5 @@ site/
 *.tar.gz
 towerify/secrets
 towerify/towerify.shellspec
+towerify/templates
+towerify/config.ini
