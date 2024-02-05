@@ -1,6 +1,6 @@
 name: towerify
 help: Towerify CLI. See https://docs.towerify.io/cli/
-version: 0.5.1
+version: 0.5.2
 
 flags:
   - &flag_debug
@@ -52,7 +52,7 @@ commands:
   help: Ajoute à bash la complétion des commandes et des options de towerify
 
   examples:
-    - eval "$(towerify completions)"
+    - eval "\$(towerify completions)"
 
 
 - name: init
