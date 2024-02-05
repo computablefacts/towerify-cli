@@ -198,7 +198,7 @@ pipeline {
         stage('Create Swarm Network') {
             steps {
                 script {
-                    sh "sudo docker network create ${towerify_app_id} --driver overlay"
+                    sh "sudo docker network create ${towerify_app_id} --driver overlay || true"
                 }
             }
         }
