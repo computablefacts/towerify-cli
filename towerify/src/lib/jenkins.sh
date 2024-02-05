@@ -47,6 +47,18 @@ jenkins_check_job_exists() {
   fi
 }
 
+jenkins_job_status() {
+  jenkins_job_name=${1}
+
+  entrypoint="/job/${jenkins_job_name}/lastBuild/api/json"
+  debug_output "entrypoint=$entrypoint" "\n"
+
+  result=$(jenkins_api $entrypoint)
+  debug_output "result=\n----\n${result}\n----\n"
+
+  echo "$result"
+}
+
 jenkins_create_job() {
   jenkins_job_name=${1}
   app_type=${2}

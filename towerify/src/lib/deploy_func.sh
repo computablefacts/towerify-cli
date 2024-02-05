@@ -69,6 +69,11 @@ towerify_deploy() {
   fi
   echo "$(green_bold "==> Compression réussie.")"
 
+  # Récupérer le numéro du dernier build
+  local last_job_status=$(jenkins_job_status $jenkins_job_name)
+  local last_build_number=$(echo "${last_job_status}" | jq -r '.number')
+  debug_output "last_build_number=$last_build_number"
+
   # Envoyer le ZIP au Job Jenkins
   echo -n "Lancement du déploiement... "
   if ! jenkins_build_job $jenkins_job_name $app_env; then
@@ -79,9 +84,60 @@ towerify_deploy() {
   fi
 
   # Surveiller l'avancement du Job
+  local job_status
+  local build_number=$last_build_number
+
+  # Attendre que le job commence
+  while [ "${last_build_number}" == "${build_number}" ]; do
+      display_progress "Job en attente de démarrage..."
+      sleep 3
+      job_status=$(jenkins_job_status $jenkins_job_name)
+      build_number=$(echo "${job_status}" | jq -r '.number')
+  done
+  local job_start_time=$(date +%s)
+  display_progress "Job en cours d'exécution..."
+  sleep 3
+  
+  local building=true
+
+  # Attendre que le job se termine
+  while [ "${building}" == "true" ]; do
+      local current_time=$(date +%s)
+      job_status=$(jenkins_job_status $jenkins_job_name)
+
+      # Extraire les informations pertinentes
+      local result=$(echo "${job_status}" | jq -r '.result')
+      local estimated_duration=$(echo "${job_status}" | jq -r '.estimatedDuration' | awk '{ print int($1 / 1000) }')  # Conversion en secondes
+      local duration=$((current_time - job_start_time))
+      local progress=$((duration * 100 / estimated_duration))
+      local remaining_time=$((estimated_duration - duration))
+      local build_number=$(echo "${job_status}" | jq -r '.number')
+
+      # Afficher les informations
+      if [ "$estimated_duration" -gt "$duration" ]; then
+        display_progress "Job en cours d'exécution... Temps restant estimé à ${remaining_time}s " "${progress}%"
+      else
+        display_progress "Job en cours d'exécution... depuis ${duration}s "
+      fi
+
+      sleep 3
+      building=$(echo "${job_status}" | jq -r '.building')
+  done
 
   # Afficher Success ou Failure
+  if [ "${result}" == "SUCCESS" ]; then
+    display_progress "Le job est terminé avec le statut : ${result}" "OK" "green_bold"
+    echo 
+    echo "$(green_bold "==> Le job a réussi.")"
+  else
+    display_progress "Le job est terminé avec le statut : ${result}" "KO" "red_bold"
+    echo
+    echo "$(red_bold "==> Le job a échoué.")"
+    echo "Vous pouvez utiliser le lien ci-dessous pour avoir plus de détails sur l'erreur."
+  fi
+
   # Afficher l'URL permettant d'aller voir les logs dans Jenkins
+  echo "Lien vers le pipeline : $(jenkins_base_url)blue/organizations/jenkins/${jenkins_job_name}/detail/${jenkins_job_name}/${build_number}/pipeline"
 
   # Renomme le tar.gz avec un timestamp
   tar_timestamp=$(date +%Y%m%d-%H%M%S)
