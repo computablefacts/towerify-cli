@@ -141,6 +141,7 @@ towerify_deploy() {
 
   # Renomme le tar.gz avec un timestamp
   tar_timestamp=$(date +%Y%m%d-%H%M%S)
-  mv ${app_config_dir}/app.tar.gz ${app_config_dir}/app.${tar_timestamp}.tar.gz
-  echo "Application compressée dans ${app_config_dir}/app.${tar_timestamp}.tar.gz"
+  mkdir -p ${app_config_dir}/${app_env}
+  mv ${app_config_dir}/app.tar.gz ${app_config_dir}/${app_env}/app.${tar_timestamp}.tar.gz
+  echo "Application compressée dans ${app_config_dir}/${app_env}/app.${tar_timestamp}.tar.gz"
 }
