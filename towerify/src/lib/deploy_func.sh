@@ -138,10 +138,10 @@ towerify_deploy() {
     progress_stop "KO" "red_bold"
     echo "$(red_bold "==> Le job a échoué.")"
     echo "Vous pouvez utiliser le lien ci-dessous pour avoir plus de détails sur l'erreur."
-  fi
 
-  # Afficher l'URL permettant d'aller voir les logs dans Jenkins
-  echo "Lien vers le pipeline : $(jenkins_base_url)blue/organizations/jenkins/${jenkins_job_name}/detail/${jenkins_job_name}/${build_number}/pipeline"
+    # Afficher l'URL permettant d'aller voir les logs dans Jenkins
+    echo "Lien vers le pipeline : $(jenkins_base_url)blue/organizations/jenkins/${jenkins_job_name}/detail/${jenkins_job_name}/${build_number}/pipeline"
+  fi
 
   # Renomme le tar.gz avec un timestamp
   tar_timestamp=$(date +%Y%m%d-%H%M%S)
