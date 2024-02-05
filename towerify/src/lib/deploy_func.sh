@@ -148,4 +148,12 @@ towerify_deploy() {
   mkdir -p ${app_config_dir}/${app_env}
   mv ${app_config_dir}/app.tar.gz ${app_config_dir}/${app_env}/app.${tar_timestamp}.tar.gz
   echo "Application compressée dans ${app_config_dir}/${app_env}/app.${tar_timestamp}.tar.gz"
+
+  # Afficher l'URL vers l'application
+  local url_domain=$(app_config_get ".config.envs.${app_env}.domain" "${app_env}.${app_name}.${towerify_domain}")
+  local url_path=$(app_config_get ".config.envs.${app_env}.path" "")  
+  echo
+  echo "Vous pouvez accéder à votre application avec :"
+  echo "$(bold "https://${url_domain}/${url_path}")"
+  echo
 }
