@@ -28,7 +28,7 @@ Pour cela, ouvrir une ligne de commande dans le répertoire `./towerify` et
 taper :
 
 ``` bash
-bashly generate -w
+bashly generate -w -u
 ```
 
 Puis ouvrir une deuxième ligne de commande dans le répertoire `./towerify` 

@@ -8,7 +8,7 @@ cd ./install || exit
 bashly generate --env production
 
 cd ../towerify || exit
-bashly generate --env production
+bashly generate --env production --upgrade
 
 cd ..
 
