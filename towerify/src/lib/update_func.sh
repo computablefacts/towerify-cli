@@ -50,7 +50,7 @@ towerify_update() {
   echo "$(bold "Terminé.")"
   echo
   echo "Si vous voulez ajouter la complétion à votre bash, utilisez :"
-  echo "  $(bold "eval \"$(towerify completions)\"")"
+  echo "  $(bold "eval \"\$(towerify completions)\"")"
   echo
 
 }
