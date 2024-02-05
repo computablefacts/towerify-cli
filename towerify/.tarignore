@@ -1,3 +1,5 @@
+towerify/*.tar.gz
+towerify/*/*.tar.gz
 .git/
 conf/
 install/
