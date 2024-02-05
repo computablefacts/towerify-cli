@@ -14,9 +14,9 @@ display_progress() {
   local progress_color=${3:-echo}
 
   local screen_nb_cols=$(($(tput cols) - 2))
-  local nb_points=$(($screen_nb_cols - ${#title} - ${#progress} - 2))
+  local nb_points=$(($screen_nb_cols - ${#title} - ${#progress} - 4))
 
-  printf "%s" "${title}"
+  printf "%s" "${title} "
   printf "%0.s." $(seq 1 $nb_points)
-  printf "%s\r" "[$($progress_color "${progress}")]"
+  printf "%s\r" " [$($progress_color "${progress}")]"
 }
