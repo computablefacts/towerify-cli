@@ -48,6 +48,13 @@ commands:
     - towerify update --force
 
 
+- name: completions
+  help: Ajoute à bash la complétion des commandes et des options de towerify
+
+  examples:
+    - eval "$(towerify completions)"
+
+
 - name: init
   help: |-
     Initialise une nouvelle application
