@@ -9,14 +9,38 @@ debug_output() {
 }
 
 display_progress() {
-  local title=${1:-}
-  local progress=${2:-??}
-  local progress_color=${3:-echo}
-
   local screen_nb_cols=$(($(tput cols) - 2))
-  local nb_points=$(($screen_nb_cols - ${#title} - ${#progress} - 4))
+  local nb_points=$(($screen_nb_cols - ${#progress_title} - ${#progress_status} - 4))
 
-  printf "%s" "${title} "
-  printf "%0.s." $(seq 1 $nb_points)
-  printf "%s\r" " [$($progress_color "${progress}")]"
+  printf "%s" "${progress_title} " >&2
+  printf "%0.s." $(seq 1 $nb_points) >&2
+  printf "%s\r" " [$($progress_color "${progress_status}")]" >&2
+}
+
+progress_start() {
+  declare -g progress_title=${1}
+  declare -g progress_status=${2:-??}
+  declare -g progress_color=${3:-blue}
+
+  display_progress
+}
+
+progress_change_title() {
+  declare -g progress_title=${1}
+
+  display_progress
+}
+
+progress_update() {
+  declare -g progress_status=${1:-??}
+  declare -g progress_color=${2:-blue}
+
+  display_progress
+}
+
+progress_stop() {
+  progress_update "$1" "$2"
+  echo
+  
+  declare -g progress_title="Call progress_start first"
 }

@@ -25,61 +25,52 @@ towerify_deploy() {
   debug_output "towerify_password=${towerify_password}"
 
   # Vérifier la connexion à Jenkins (le mettre dans un filtre Bashly ?)
-  display_progress "Tentative de connexion à Towerify"
+  progress_start "Tentative de connexion à Towerify"
   if ! jenkins_is_accessible; then
-    display_progress "Tentative de connexion à Towerify" "KO" "red_bold"
-    echo
+    progress_stop "KO" "red_bold"
     echo "$(red_bold "==> Connexion échouée.")"
     echo "Verifiez vos informations de connexion à Towerify."
     echo
     exit 1
   fi
-  display_progress "Tentative de connexion à Towerify" "OK" "green_bold"
-  echo
+  progress_stop "OK" "green_bold"
 
   # Vérifier si le job Jenkins existe déjà ou pas
   # Job name = <app_name>_<env>
-  display_progress "Vérification du pipeline de déploiement"
+  progress_start "Vérification du pipeline de déploiement"
   if ! jenkins_check_job_exists $jenkins_job_name; then
     # Le job n'existe pas
-    display_progress "Vérification du pipeline de déploiement" "création" "yellow"
+    progress_update "création" "yellow"
     if ! jenkins_create_job $jenkins_job_name $app_type; then
-      display_progress "Vérification du pipeline de déploiement" "KO" "red_bold"
-      echo
+      progress_stop "KO" "red_bold"
       echo "$(red_bold "==> Création échouée.")"
       exit 1
     fi
-    display_progress "Vérification du pipeline de déploiement" "OK" "green_bold"
-    echo
+    progress_stop "OK" "green_bold"
   else
-    display_progress "Vérification du pipeline de déploiement" "OK" "green_bold"
-    echo
+    progress_stop "OK" "green_bold"
   fi
   
   # Envoyer les secrets
   # Secret name = <app_name>_<env>
-  display_progress "Envoi des secrets"
+  progress_start "Envoi des secrets"
   if ! jenkins_send_secrets $jenkins_job_name; then
     # Erreur
-    display_progress "Envoi des secrets" "KO" "red_bold"
-    echo
+    progress_stop "KO" "red_bold"
     echo "$(red_bold "==> Création des secrets échouée.")"
     exit 1
   else
-    display_progress "Envoi des secrets" "OK" "green_bold"
-    echo
+    progress_stop "OK" "green_bold"
   fi
   
   # Zipper le répertoire
-  display_progress "Compression des fichiers de votre application"
+  progress_start "Compression des fichiers de votre application"
   if ! app_compress; then
-    display_progress "Compression des fichiers de votre application" "KO" "red_bold"
-    echo
+    progress_stop "KO" "red_bold"
     echo "$(red_bold "==> Compression échouée.")"
     exit 1
   fi
-  display_progress "Compression des fichiers de votre application" "OK" "green_bold"
-  echo
+  progress_stop "OK" "green_bold"
 
   # Récupérer le numéro du dernier build
   local last_job_status=$(jenkins_job_status $jenkins_job_name)
@@ -87,15 +78,13 @@ towerify_deploy() {
   debug_output "last_build_number=$last_build_number"
 
   # Envoyer le ZIP au Job Jenkins
-  display_progress "Lancement du déploiement"
+  progress_start "Lancement du déploiement"
   if ! jenkins_build_job $jenkins_job_name $app_env; then
-    display_progress "Lancement du déploiement" "KO" "red_bold"
-    echo
+    progress_stop "KO" "red_bold"
     echo "$(red_bold "==> Lancement échoué.")"
     exit 1
   else
-    display_progress "Lancement du déploiement" "OK" "green_bold"
-    echo
+    progress_stop "OK" "green_bold"
   fi
 
   # Surveiller l'avancement du Job
@@ -104,13 +93,13 @@ towerify_deploy() {
 
   # Attendre que le job commence
   while [ "${last_build_number}" == "${build_number}" ]; do
-      display_progress "Job en attente de démarrage"
+      progress_start "Job en attente de démarrage"
       sleep 3
       job_status=$(jenkins_job_status $jenkins_job_name)
       build_number=$(echo "${job_status}" | jq -r '.number')
   done
   local job_start_time=$(date +%s)
-  display_progress "Job en cours d'exécution"
+  progress_change_title "Job en cours d'exécution"
   sleep 3
   
   local building=true
@@ -130,9 +119,10 @@ towerify_deploy() {
 
       # Afficher les informations
       if [ "$estimated_duration" -gt "$duration" ]; then
-        display_progress "Job en cours d'exécution... Temps restant estimé à ${remaining_time}s" "${progress}%"
+        progress_change_title "Job en cours d'exécution... Temps restant estimé à ${remaining_time}s"
+        progress_update "${progress}%"
       else
-        display_progress "Job en cours d'exécution... depuis ${duration}s"
+        progress_change_title "Job en cours d'exécution... depuis ${duration}s"
       fi
 
       sleep 3
@@ -140,13 +130,12 @@ towerify_deploy() {
   done
 
   # Afficher Success ou Failure
+  progress_change_title "Le job est terminé avec le statut : ${result}"
   if [ "${result}" == "SUCCESS" ]; then
-    display_progress "Le job est terminé avec le statut : ${result}" "OK" "green_bold"
-    echo 
+    progress_stop "OK" "green_bold"
     echo "$(green_bold "==> Le job a réussi.")"
   else
-    display_progress "Le job est terminé avec le statut : ${result}" "KO" "red_bold"
-    echo
+    progress_stop "KO" "red_bold"
     echo "$(red_bold "==> Le job a échoué.")"
     echo "Vous pouvez utiliser le lien ci-dessous pour avoir plus de détails sur l'erreur."
   fi
