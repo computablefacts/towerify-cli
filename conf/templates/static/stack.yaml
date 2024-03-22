@@ -5,6 +5,8 @@ services:
     ports:
     - target: 80
       published: __PORT__
+    env_file:
+      - .env
     deploy:
       replicas: 1
       resources:
