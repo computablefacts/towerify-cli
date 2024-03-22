@@ -172,6 +172,10 @@ pipeline {
                         sh "sudo yunohost domain cert install ${towerify_app_domain}"
                     }
 
+                    withCredentials([file(credentialsId: "${towerify_app_id}", variable: 'envfile')]) {
+                        sh "cp ${envfile} ./.env"
+                    }
+
                     print "APP_ENV=${APP_ENV}"
                     print "ENV_DOCKER_TAG=${env.ENV_DOCKER_TAG}"
                     print "towerify_app_id=${towerify_app_id}"
@@ -185,6 +189,7 @@ pipeline {
                 checkout changelog: false, scm: scmGit(branches: [[name: '*/main']], extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${TOWERIFY_APP_TEMPLATE_PATH}"]], userRemoteConfigs: [[url: 'https://github.com/computablefacts/docker_swarm_ynh']])
 
                 dir(TOWERIFY_APP_TEMPLATE_PATH) {
+                    sh 'cp ../.env ./conf/.env'
                     sh "cp ../${dockerswarm_filename} ./conf/stack.yaml"
                     sh "cp ../${nginxconf_filename} ./conf/nginx.conf"
                     sh "./customize.sh --app-id ${towerify_app_id} --name '${towerify_app_name_short} ${APP_ENV}' "
