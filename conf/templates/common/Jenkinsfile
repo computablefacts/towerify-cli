@@ -24,7 +24,8 @@ pipeline {
     environment {
         ENV_DOCKER_TAG = "${APP_ENV}-latest"
         TOWERIFY_APP_TEMPLATE_PATH = 'docker_swarm_ynh'
-        DOCKER_REGISTRY = 'http://127.0.0.1:5000'
+        DOCKER_REGISTRY = '127.0.0.1:5000'
+        DOCKER_REGISTRY_WITH_HTTP = 'http://127.0.0.1:5000'
     }
 
     stages {
