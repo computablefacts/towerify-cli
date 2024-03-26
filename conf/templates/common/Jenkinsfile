@@ -24,7 +24,7 @@ pipeline {
     environment {
         ENV_DOCKER_TAG = "${APP_ENV}-latest"
         TOWERIFY_APP_TEMPLATE_PATH = 'docker_swarm_ynh'
-        DOCKER_REGISTRY_CRED_ID = 'docker-hub-cf-cred' // credential defined in Jenkins
+        DOCKER_REGISTRY = 'http://127.0.0.1:5000'
     }
 
     stages {
@@ -136,8 +136,8 @@ pipeline {
                 script {
                     // Build...
                     dockerImage = docker.build("${docker_image_name}", "-f ${dockerfile_filename} ./app")
-                    // .. and push to Docker Hub
-                    docker.withRegistry('', "${env.DOCKER_REGISTRY_CRED_ID}") {
+                    // .. and push to Docker registry
+                    docker.withRegistry("${DOCKER_REGISTRY}") {
                         dockerImage.push("${docker_image_tag}")
                     }
                 }
@@ -211,7 +211,7 @@ pipeline {
         stage('Towerify Publish') {
             steps {
                 script {
-                    docker.withRegistry('', "${env.DOCKER_REGISTRY_CRED_ID}") {
+                    docker.withRegistry("${DOCKER_REGISTRY}") {
                         dockerImage.push("${env.ENV_DOCKER_TAG}")
                     }
                 }
