@@ -85,7 +85,7 @@ pipeline {
                     echo "dockerfile_filename=${dockerfile_filename}"
                     sh "cat ${dockerfile_filename}"
 
-                    docker_image_name = "computablefacts/${env.TOWERIFY_MAIN_DOMAIN}-${app_name}"
+                    docker_image_name = "towerify/${env.TOWERIFY_MAIN_DOMAIN}-${app_name}"
                     docker_image_tag = sh(script: "echo twr-${env.BUILD_TAG} | sed -r 's#%2F#_#g'", returnStdout: true).trim()
                     echo "image=${docker_image_name}:${docker_image_tag}"
                 }
