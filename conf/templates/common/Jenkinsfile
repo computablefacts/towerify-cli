@@ -136,11 +136,11 @@ pipeline {
             steps {
                 script {
                     // Build...
-                    dockerImage = docker.build("${docker_image_name}", "-f ${dockerfile_filename} ./app")
+                    dockerImage = docker.build("${docker_image_name}:${docker_image_tag}", "-f ${dockerfile_filename} ./app")
                     // .. and push to Docker registry
-                    docker.withRegistry("${DOCKER_REGISTRY_WITH_PROTOCOL}") {
-                        dockerImage.push("${docker_image_tag}")
-                    }
+                    //docker.withRegistry("${DOCKER_REGISTRY_WITH_PROTOCOL}") {
+                    //    dockerImage.push("${docker_image_tag}")
+                    //}
                 }
             }
         }
@@ -212,9 +212,10 @@ pipeline {
         stage('Towerify Publish') {
             steps {
                 script {
-                    docker.withRegistry("${DOCKER_REGISTRY_WITH_PROTOCOL}") {
-                        dockerImage.push("${env.ENV_DOCKER_TAG}")
-                    }
+                    //docker.withRegistry("${DOCKER_REGISTRY_WITH_PROTOCOL}") {
+                    //    dockerImage.push("${env.ENV_DOCKER_TAG}")
+                    //}
+                    sh "sudo docker tag ${docker_image_name}:${docker_image_tag} ${docker_image_name}:${env.ENV_DOCKER_TAG}"
                 }
                 dir(TOWERIFY_APP_TEMPLATE_PATH) {
                     script {
