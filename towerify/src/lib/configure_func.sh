@@ -22,6 +22,7 @@ towerify_configure() {
   debug_output "jenkins_domain=$jenkins_domain"
 
   # Ask for login if needed
+  towerify_login=$login
   if [[ "$login" = "ask" ]]; then
     towerify_login=$(config_get "${profile}.towerify_login" '')
     display_question "Quel est votre login Towerify"
@@ -32,6 +33,7 @@ towerify_configure() {
   debug_output "login=$login"
 
   # Ask for password if needed
+  towerify_password=$password
   if [[ "$password" = "ask" ]]; then
     display_question "Quel est votre mot de passe Towerify"
     password=$(ask_password)
