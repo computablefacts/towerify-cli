@@ -38,6 +38,7 @@ towerify_deploy() {
   # Vérifier si le job Jenkins existe déjà ou pas
   # Job name = <app_name>_<env>
   progress_start "Vérification du pipeline de déploiement"
+  local last_build_number=0
   if ! jenkins_check_job_exists $jenkins_job_name; then
     # Le job n'existe pas
     progress_update "création" "yellow"
@@ -48,8 +49,11 @@ towerify_deploy() {
     fi
     progress_stop "OK" "green_bold"
   else
+    local last_job_status=$(jenkins_job_status $jenkins_job_name)
+    last_build_number=$(echo "${last_job_status}" | jq -r '.number')
     progress_stop "OK" "green_bold"
   fi
+  debug_output "last_build_number=$last_build_number"
   
   # Envoyer les secrets
   # Secret name = <app_name>_<env>
@@ -72,11 +76,6 @@ towerify_deploy() {
   fi
   progress_stop "OK" "green_bold"
 
-  # Récupérer le numéro du dernier build
-  local last_job_status=$(jenkins_job_status $jenkins_job_name)
-  local last_build_number=$(echo "${last_job_status}" | jq -r '.number')
-  debug_output "last_build_number=$last_build_number"
-
   # Envoyer le ZIP au Job Jenkins
   progress_start "Lancement du déploiement"
   if ! jenkins_build_job $jenkins_job_name $app_env; then
@@ -95,8 +94,10 @@ towerify_deploy() {
   while [ "${last_build_number}" == "${build_number}" ]; do
       progress_start "Job en attente de démarrage"
       sleep 3
-      job_status=$(jenkins_job_status $jenkins_job_name)
+      job_status=$(jenkins_job_status $jenkins_job_name 2>/dev/null)
       build_number=$(echo "${job_status}" | jq -r '.number')
+      if [ -z "$build_number" ]; then build_number=0; fi
+      debug_output "Waiting job start: build_number=[$build_number]"
   done
   local job_start_time=$(date +%s)
   progress_change_title "Job en cours d'exécution"
@@ -113,9 +114,12 @@ towerify_deploy() {
       local result=$(echo "${job_status}" | jq -r '.result')
       local estimated_duration=$(echo "${job_status}" | jq -r '.estimatedDuration' | awk '{ print int($1 / 1000) }')  # Conversion en secondes
       local duration=$((current_time - job_start_time))
-      local progress=$((duration * 100 / estimated_duration))
-      local remaining_time=$((estimated_duration - duration))
-      local build_number=$(echo "${job_status}" | jq -r '.number')
+      # .estimatedDuration vaut -1 si c'est la première exécution. Donc estimated_duration vaut -1/1000 = 0
+      if [ "$estimated_duration" -gt "0" ]; then
+        local progress=$((duration * 100 / estimated_duration))
+        local remaining_time=$((estimated_duration - duration))
+        local build_number=$(echo "${job_status}" | jq -r '.number')
+      fi
 
       # Afficher les informations
       if [ "$estimated_duration" -gt "$duration" ]; then
