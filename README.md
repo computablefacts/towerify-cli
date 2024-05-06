@@ -13,7 +13,7 @@ Ces 2 scripts sont générés grâce à [Bashly](https://bashly.dannyb.co/).
 ./build.sh
 ```
 
-La build utilise l'image Docker de Bashky.
+La build utilise l'image Docker de Bashly.
 Elle génère les 2 scripts en version production.
 
 Le script d'installation se trouve dans `./install/install` et
