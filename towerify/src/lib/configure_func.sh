@@ -1,8 +1,8 @@
 towerify_configure() {
-  domain=${1:-ask}
-  login=${2:-ask}
-  password=${3:-ask}
-  profile=${4:-default}
+  local domain=${1:-ask}
+  local login=${2:-ask}
+  local password=${3:-ask}
+  local profile=${4:-default}
 
   debug_output "domain=$domain"
   debug_output "login=$login"
