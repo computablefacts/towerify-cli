@@ -37,6 +37,7 @@ towerify_configure() {
   if [[ "$password" = "ask" ]]; then
     display_question "Quel est votre mot de passe Towerify"
     password=$(ask_password)
+    towerify_password=$password
     echo
   fi
 
