@@ -17,6 +17,7 @@ Describe 'towerify configure'
       rm $CONFIG_FILE
       touch $CONFIG_FILE
     fi
+    set_profile 'default'
   }
 
   Before 'empty_towerify_config'
@@ -68,6 +69,7 @@ Describe 'towerify configure'
 
   It "should ask for domain, login and password and store to my_profile"
 #    g_debug=1
+    set_profile 'my_profile'
     jenkins_is_accessible() {
       true
     }
@@ -78,7 +80,7 @@ Describe 'towerify configure'
       #|MyP@ssw0rD3
     End
     
-    When run towerify_configure 'ask' 'ask' 'ask' 'my_profile'
+    When run towerify_configure 'ask' 'ask' 'ask'
 #    Dump
     The line 1 of output should include 'Quel est le domaine de votre Towerify'
     The line 3 of output should include 'Quel est votre login Towerify'
@@ -95,11 +97,12 @@ Describe 'towerify configure'
 
   It "should use parameters for domain, login and password and store to my_profile"
 #    g_debug=1
+    set_profile 'my_profile'
     jenkins_is_accessible() {
       true
     }
 
-    When run towerify_configure 'my-corp4.towerify.io' 'my_login4' 'MyP@ssw0rD4' 'my_profile'
+    When run towerify_configure 'my-corp4.towerify.io' 'my_login4' 'MyP@ssw0rD4'
 #    Dump
     The line 4 of output should include 'Towerify CLI est correctement configuré'
     The line 4 of output should include 'instance Towerify my-corp4.towerify.io'

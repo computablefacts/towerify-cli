@@ -12,6 +12,26 @@ debug_output() {
   fi
 }
 
+set_profile() {
+  declare -g g_profile=$1
+
+  read_profile_settings
+}
+
+read_profile_settings() {
+  debug_output "CONFIG_FILE=$CONFIG_FILE"
+  
+  declare -g towerify_domain=$(config_get "${g_profile}.towerify_domain" "not_found")
+  declare -g jenkins_domain=$(config_get "${g_profile}.jenkins_domain" "not_found")
+  declare -g towerify_login=$(config_get "${g_profile}.towerify_login" "not_found")
+  declare -g towerify_password=$(config_get "${g_profile}.towerify_password" "not_found")
+
+  debug_output "towerify_domain=${towerify_domain}"
+  debug_output "jenkins_domain=${jenkins_domain}"
+  debug_output "towerify_login=${towerify_login}"
+  debug_output "towerify_password=${towerify_password}"
+}
+
 display_progress() {
   local screen_nb_cols=$(($(tput cols) - 2))
   local nb_points=$(($screen_nb_cols - ${#progress_title} - ${#progress_status} - 4))

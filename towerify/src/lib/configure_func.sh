@@ -2,16 +2,15 @@ towerify_configure() {
   local domain=${1:-ask}
   local login=${2:-ask}
   local password=${3:-ask}
-  local profile=${4:-default}
 
   debug_output "domain=$domain"
   debug_output "login=$login"
   debug_output "password=$password"
-  debug_output "profile=$profile"
+  debug_output "profile=$g_profile"
 
   # Ask for domain if needed
   if [[ "$domain" = "ask" ]]; then
-    towerify_domain=$(config_get "${profile}.towerify_domain" '')
+    towerify_domain=$(config_get "${g_profile}.towerify_domain" '')
     display_question "Quel est le domaine de votre Towerify"
     domain=$(ask_string $towerify_domain)
     echo
@@ -24,9 +23,10 @@ towerify_configure() {
   # Ask for login if needed
   towerify_login=$login
   if [[ "$login" = "ask" ]]; then
-    towerify_login=$(config_get "${profile}.towerify_login" '')
+    towerify_login=$(config_get "${g_profile}.towerify_login" '')
     display_question "Quel est votre login Towerify"
     login=$(ask_string $towerify_login)
+    towerify_login=$login
     echo
   fi
 
@@ -57,10 +57,10 @@ towerify_configure() {
   fi
   # Ecrire dans le fichier de conf
   debug_output "CONFIG_FILE=$CONFIG_FILE"
-  config_set "${profile}.towerify_domain" $domain
-  config_set "${profile}.towerify_login" $login
-  config_set "${profile}.towerify_password" $password
-  config_set "${profile}.jenkins_domain" $jenkins_domain
+  config_set "${g_profile}.towerify_domain" $domain
+  config_set "${g_profile}.towerify_login" $login
+  config_set "${g_profile}.towerify_password" $password
+  config_set "${g_profile}.jenkins_domain" $jenkins_domain
 
   echo "$(green_bold "==> Connexion réussie.")"
   echo
