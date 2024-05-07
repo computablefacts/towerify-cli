@@ -50,7 +50,7 @@ towerify_configure() {
   config_set "${profile}.jenkins_domain" $jenkins_domain
 
   # Debug config.ini
-  [[ $debug -eq 1 ]] && config_show
+  [[ $g_debug -eq 1 ]] && config_show
 
   # Check Towerify access
   echo

@@ -1,6 +1,6 @@
 # Paramétrage
 set_debug ${args[--debug]:-0}
-[[ $debug -eq 1 ]] && inspect_args
+[[ $g_debug -eq 1 ]] && inspect_args
 name=${args[name]:-ask}
 type=${args[type]:-ask}
 force=${args[--force]:-0}

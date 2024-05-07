@@ -3,11 +3,11 @@ display_question() {
 }
 
 set_debug() {
-  debug=$1
+  g_debug=$1
 }
 
 debug_output() {
-  if [[ $debug -eq 1 ]]; then
+  if [[ $g_debug -eq 1 ]]; then
     echo -e "$(cyan "${2:-}[DEBUG] ${FUNCNAME[1]}() ${1:-}")" 1>&2
   fi
 }

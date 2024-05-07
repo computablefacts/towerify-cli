@@ -22,7 +22,7 @@ Describe 'towerify configure'
   Before 'empty_towerify_config'
 
   It "should ask for domain, login and password and store to default profile"
-#    debug=1
+#    g_debug=1
     jenkins_is_accessible() {
       true
     }
@@ -49,7 +49,7 @@ Describe 'towerify configure'
   End
 
   It "should use parameters for domain, login and password and store to default profile"
-#    debug=1
+#    g_debug=1
     jenkins_is_accessible() {
       true
     }
@@ -67,7 +67,7 @@ Describe 'towerify configure'
   End
 
   It "should ask for domain, login and password and store to my_profile"
-#    debug=1
+#    g_debug=1
     jenkins_is_accessible() {
       true
     }
@@ -94,7 +94,7 @@ Describe 'towerify configure'
   End
 
   It "should use parameters for domain, login and password and store to my_profile"
-#    debug=1
+#    g_debug=1
     jenkins_is_accessible() {
       true
     }

@@ -34,7 +34,7 @@ Describe 'jenkins.sh'
 
   Describe 'jenkins_is_accessible()'
     test_it() {
-      #debug=1
+      #g_debug=1
       if jenkins_is_accessible; then
         echo "true"
       else
@@ -63,7 +63,7 @@ Describe 'jenkins.sh'
 
   Describe 'jenkins_check_job_exists()'
     test_it() {
-      #debug=1
+      #g_debug=1
       if jenkins_check_job_exists "my_job"; then
         echo "true"
       else
@@ -97,7 +97,7 @@ Describe 'jenkins.sh'
     End
 
     test_it() {
-      #debug=1
+      #g_debug=1
       if jenkins_create_job "my_job" ${1}; then
         echo "true"
       else

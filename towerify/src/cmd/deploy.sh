@@ -1,6 +1,6 @@
 # Paramétrage
 set_debug ${args[--debug]:-0}
-[[ $debug -eq 1 ]] && inspect_args
+[[ $g_debug -eq 1 ]] && inspect_args
 curl_cli=${deps[curl]}
 jq_cli=${deps[jq]}
 env=${args[--env]}
