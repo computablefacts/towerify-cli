@@ -161,4 +161,63 @@ Describe 'validate.sh'
       End
     End
   End
+
+  Describe 'validate_app_name'
+    Describe 'valid'
+      Parameters
+        'x'
+        'AWS-02'
+        'xyz-02'
+        'abcdefghif1234567890123456789012'
+      End
+
+      It "should succeed with '$1'"
+
+        When call validate_app_name "$1"
+        The output should be blank
+      End
+    End
+
+    Describe 'invalid first char'
+      Parameters
+        ''
+        '-profile'
+        '_pro'
+        '3-AWS'
+      End
+
+      It "should fail with '$1'"
+
+        When call validate_app_name "$1"
+        The output should include "le nom de l'application doit commencer par un de ces caractères [a-zA-Z]"
+      End
+    End
+
+    Describe 'invalid chars'
+      Parameters
+        'a_xyz'
+        'a=34'
+        'a_pro'
+        'a-AWS_'
+      End
+
+      It "should fail with '$1'"
+
+        When call validate_app_name "$1"
+        The output should include "le nom de l'application ne doit contenir que les caractères [a-zA-Z0-9-]"
+      End
+    End
+
+    Describe 'too long'
+      Parameters
+        'abcdefghif12345678901234567890123'
+      End
+
+      It "should fail with '$1'"
+
+        When call validate_app_name "$1"
+        The output should include "le nom de l'application doit avoir 32 caractères maximum"
+      End
+    End
+  End
 End

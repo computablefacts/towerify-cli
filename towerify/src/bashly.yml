@@ -65,6 +65,7 @@ commands:
   args:
     - name: name
       help: Nom de l'application
+      validate: app_name
     - name: type
       help: Type de l'application
       allowed: [ask, static, lamp]
