@@ -10,8 +10,12 @@ towerify_configure() {
 
   # Ask for domain if needed
   if [[ "$domain" = "ask" ]]; then
-    display_question "Quel est le domaine de votre Towerify"
-    g_towerify_domain=$(ask_string $g_towerify_domain)
+    domain=''
+    while [[ -z "$domain" ]]; do
+      display_question "Quel est le domaine de votre Towerify"
+      domain=$(ask_string $g_towerify_domain)
+    done
+    g_towerify_domain=$domain
     echo
   else
     g_towerify_domain=$domain
@@ -23,8 +27,12 @@ towerify_configure() {
 
   # Ask for login if needed
   if [[ "$login" = "ask" ]]; then
-    display_question "Quel est votre login Towerify"
-    g_towerify_login=$(ask_string $g_towerify_login)
+    login=''
+    while [[ -z "$login" ]]; do
+      display_question "Quel est votre login Towerify"
+      login=$(ask_string $g_towerify_login)
+    done
+    g_towerify_login=$login
     echo
   else
     g_towerify_login=$login
@@ -34,8 +42,12 @@ towerify_configure() {
 
   # Ask for password if needed
   if [[ "$password" = "ask" ]]; then
-    display_question "Quel est votre mot de passe Towerify"
-    g_towerify_password=$(ask_password)
+    password=''
+    while [[ -z "$password" ]]; do
+      display_question "Quel est votre mot de passe Towerify"
+      password=$(ask_password)
+    done
+    g_towerify_password=$password
     echo
   else
     g_towerify_password=$password

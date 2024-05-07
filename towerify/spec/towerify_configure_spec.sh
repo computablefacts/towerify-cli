@@ -113,4 +113,112 @@ Describe 'towerify configure'
     The line 4 of contents of file towerify-config-file should eq 'towerify_login=my_login4'
     The line 5 of contents of file towerify-config-file should eq 'towerify_password=MyP@ssw0rD4'
   End
+
+  It "should not accept an empty domain from arg"
+    #g_debug=1
+    jenkins_is_accessible() {
+      true
+    }
+
+    Data
+      #|my-corp.towerify.io
+      #|login
+      #|pass
+    End
+    
+    When run towerify_configure ""
+    #Dump
+    The line 1 of output should include 'Quel est le domaine de votre Towerify'
+    The line 3 of output should include 'Quel est votre login Towerify'
+  End
+
+  It "should not accept an empty domain from user input"
+    #g_debug=1
+    jenkins_is_accessible() {
+      true
+    }
+
+    Data
+      #|
+      #|my-corp.towerify.io
+      #|login
+      #|pass
+    End
+    
+    When run towerify_configure
+    #Dump
+    The line 1 of output should include 'Quel est le domaine de votre Towerify'
+    The line 2 of output should include 'Quel est le domaine de votre Towerify'
+    The line 4 of output should include 'Quel est votre login Towerify'
+  End
+
+  It "should not accept an empty login from arg"
+    #g_debug=1
+    jenkins_is_accessible() {
+      true
+    }
+
+    Data
+      #|my-login
+      #|pass
+    End
+    
+    When run towerify_configure "domain.org" ""
+    #Dump
+    The line 1 of output should include 'Quel est votre login Towerify'
+    The line 3 of output should include 'Quel est votre mot de passe Towerify'
+  End
+
+  It "should not accept an empty login from user input"
+    #g_debug=1
+    jenkins_is_accessible() {
+      true
+    }
+
+    Data
+      #|
+      #|my_login
+      #|pass
+    End
+    
+    When run towerify_configure "domain.org"
+    #Dump
+    The line 1 of output should include 'Quel est votre login Towerify'
+    The line 2 of output should include 'Quel est votre login Towerify'
+    The line 4 of output should include 'Quel est votre mot de passe Towerify'
+  End
+
+  It "should not accept an empty password from arg"
+    #g_debug=1
+    jenkins_is_accessible() {
+      true
+    }
+
+    Data
+      #|pass
+    End
+    
+    When run towerify_configure "domain.org" "login" ""
+    #Dump
+    The line 1 of output should include 'Quel est votre mot de passe Towerify'
+    The line 6 of output should include 'Towerify CLI est correctement configuré'
+  End
+
+  It "should not accept an empty password from user input"
+    #g_debug=1
+    jenkins_is_accessible() {
+      true
+    }
+
+    Data
+      #|
+      #|pass
+    End
+    
+    When run towerify_configure "domain.org" "my_login"
+    #Dump
+    The line 1 of output should include 'Quel est votre mot de passe Towerify'
+    The line 2 of output should include 'Quel est votre mot de passe Towerify'
+    The line 7 of output should include 'Towerify CLI est correctement configuré'
+  End
 End
