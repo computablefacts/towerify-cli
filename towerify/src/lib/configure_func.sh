@@ -15,11 +15,9 @@ towerify_configure() {
       display_question "Quel est le domaine de votre Towerify"
       domain=$(ask_string $g_towerify_domain)
     done
-    g_towerify_domain=$domain
     echo
-  else
-    g_towerify_domain=$domain
   fi
+  g_towerify_domain=$domain
   g_jenkins_domain=jenkins.$g_towerify_domain
 
   debug_output "g_towerify_domain=$g_towerify_domain"
@@ -32,11 +30,9 @@ towerify_configure() {
       display_question "Quel est votre login Towerify"
       login=$(ask_string $g_towerify_login)
     done
-    g_towerify_login=$login
     echo
-  else
-    g_towerify_login=$login
   fi
+  g_towerify_login=$login
 
   debug_output "g_towerify_login=$g_towerify_login"
 
@@ -47,11 +43,9 @@ towerify_configure() {
       display_question "Quel est votre mot de passe Towerify"
       password=$(ask_password)
     done
-    g_towerify_password=$password
     echo
-  else
-    g_towerify_password=$password
   fi
+  g_towerify_password=$password
 
   debug_output "g_towerify_password=$g_towerify_password"
 
