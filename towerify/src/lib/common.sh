@@ -21,15 +21,15 @@ set_profile() {
 read_profile_settings() {
   debug_output "CONFIG_FILE=$CONFIG_FILE"
   
-  declare -g towerify_domain=$(config_get "${g_profile}.towerify_domain" "not_found")
-  declare -g jenkins_domain=$(config_get "${g_profile}.jenkins_domain" "not_found")
-  declare -g towerify_login=$(config_get "${g_profile}.towerify_login" "not_found")
-  declare -g towerify_password=$(config_get "${g_profile}.towerify_password" "not_found")
+  declare -g g_towerify_domain=$(config_get "${g_profile}.towerify_domain" "")
+  declare -g g_jenkins_domain=$(config_get "${g_profile}.jenkins_domain" "not_found")
+  declare -g g_towerify_login=$(config_get "${g_profile}.towerify_login" "")
+  declare -g g_towerify_password=$(config_get "${g_profile}.towerify_password" "not_found")
 
-  debug_output "towerify_domain=${towerify_domain}"
-  debug_output "jenkins_domain=${jenkins_domain}"
-  debug_output "towerify_login=${towerify_login}"
-  debug_output "towerify_password=${towerify_password}"
+  debug_output "g_towerify_domain=${g_towerify_domain}"
+  debug_output "g_jenkins_domain=${g_jenkins_domain}"
+  debug_output "g_towerify_login=${g_towerify_login}"
+  debug_output "g_towerify_password=${g_towerify_password}"
 }
 
 display_progress() {

@@ -10,38 +10,38 @@ towerify_configure() {
 
   # Ask for domain if needed
   if [[ "$domain" = "ask" ]]; then
-    towerify_domain=$(config_get "${g_profile}.towerify_domain" '')
     display_question "Quel est le domaine de votre Towerify"
-    domain=$(ask_string $towerify_domain)
+    g_towerify_domain=$(ask_string $g_towerify_domain)
     echo
+  else
+    g_towerify_domain=$domain
   fi
-  jenkins_domain=jenkins.$domain
+  g_jenkins_domain=jenkins.$g_towerify_domain
 
-  debug_output "domain=$domain"
-  debug_output "jenkins_domain=$jenkins_domain"
+  debug_output "g_towerify_domain=$g_towerify_domain"
+  debug_output "g_jenkins_domain=$g_jenkins_domain"
 
   # Ask for login if needed
-  towerify_login=$login
   if [[ "$login" = "ask" ]]; then
-    towerify_login=$(config_get "${g_profile}.towerify_login" '')
     display_question "Quel est votre login Towerify"
-    login=$(ask_string $towerify_login)
-    towerify_login=$login
+    g_towerify_login=$(ask_string $g_towerify_login)
     echo
+  else
+    g_towerify_login=$login
   fi
 
-  debug_output "login=$login"
+  debug_output "g_towerify_login=$g_towerify_login"
 
   # Ask for password if needed
-  towerify_password=$password
   if [[ "$password" = "ask" ]]; then
     display_question "Quel est votre mot de passe Towerify"
-    password=$(ask_password)
-    towerify_password=$password
+    g_towerify_password=$(ask_password)
     echo
+  else
+    g_towerify_password=$password
   fi
 
-  debug_output "password=$password"
+  debug_output "g_towerify_password=$g_towerify_password"
 
   # Debug config.ini
   [[ $g_debug -eq 1 ]] && config_show
@@ -57,14 +57,14 @@ towerify_configure() {
   fi
   # Ecrire dans le fichier de conf
   debug_output "CONFIG_FILE=$CONFIG_FILE"
-  config_set "${g_profile}.towerify_domain" $domain
-  config_set "${g_profile}.towerify_login" $login
-  config_set "${g_profile}.towerify_password" $password
-  config_set "${g_profile}.jenkins_domain" $jenkins_domain
+  config_set "${g_profile}.towerify_domain" $g_towerify_domain
+  config_set "${g_profile}.towerify_login" $g_towerify_login
+  config_set "${g_profile}.towerify_password" $g_towerify_password
+  config_set "${g_profile}.jenkins_domain" $g_jenkins_domain
 
   echo "$(green_bold "==> Connexion réussie.")"
   echo
-  echo "$(green_bold "Towerify CLI est correctement configuré pour l'instance Towerify ${domain}")"
+  echo "$(green_bold "Towerify CLI est correctement configuré pour l'instance Towerify ${g_towerify_domain}")"
   echo
   echo "Pour déployer votre première application, allez dans le répertoire de votre application et utilisez :"
   echo "  $(bold "towerify init")"

@@ -7,18 +7,18 @@ is_json_valid() {
 
 
 jenkins_base_url() {
-  echo "https://${jenkins_domain}/"
+  echo "https://${g_jenkins_domain}/"
 }
 
 jenkins_is_accessible() {
-  entrypoint="user/${towerify_login}/api/json"
+  entrypoint="user/${g_towerify_login}/api/json"
   debug_output "entrypoint=$entrypoint"
 
   result=$(jenkins_api $entrypoint)
   user_id=$(echo $result | ${jq_cli:-jq} -r '.id')
   debug_output "user_id=$user_id"
 
-  if [[ "$user_id" != "$towerify_login" ]]; then
+  if [[ "$user_id" != "$g_towerify_login" ]]; then
     debug_output "Jenkins n'est pas accessible"
     false
   else
@@ -99,7 +99,7 @@ jenkins_secrets_already_exists() {
   local readonly secret_url="${base_url}manage/credentials/store/system/domain/_/credential/${jenkins_job_name}/"
   debug_output "secret_url=${secret_url}"
 
-  curl_cmd="${curl_cli:-curl} --output /dev/null --silent --head --fail --user ${towerify_login}:${towerify_password} ${secret_url}"
+  curl_cmd="${curl_cli:-curl} --output /dev/null --silent --head --fail --user ${g_towerify_login}:${g_towerify_password} ${secret_url}"
   debug_output "curl_cmd=${curl_cmd}"
   result=$(${curl_cmd})
   return_code=$?
@@ -166,7 +166,7 @@ jenkins_build_job() {
   entrypoint="job/${jenkins_job_name}/buildWithParameters"
   debug_output "entrypoint=${entrypoint}" "\n"
 
-  result=$(jenkins_api "${entrypoint}" "POST" "--form app.tar.gz=@${app_config_dir}/app.tar.gz --form APP_ENV=${app_env} --form TOWERIFY_MAIN_DOMAIN=${towerify_domain}")
+  result=$(jenkins_api "${entrypoint}" "POST" "--form app.tar.gz=@${app_config_dir}/app.tar.gz --form APP_ENV=${app_env} --form TOWERIFY_MAIN_DOMAIN=${g_towerify_domain}")
   return_code=$?
   debug_output "jenkins_api return_code=${return_code}"
 
@@ -189,14 +189,14 @@ jenkins_api() {
   debug_output "api_url=${api_url}"
 
   if [[ "${verb}" == "POST" ]]; then
-    curl_cmd="${curl_cli:-curl} -s -L --user ${towerify_login}:${towerify_password} ${base_url}crumbIssuer/api/json"
+    curl_cmd="${curl_cli:-curl} -s -L --user ${g_towerify_login}:${g_towerify_password} ${base_url}crumbIssuer/api/json"
     debug_output "curl_cmd=${curl_cmd}"
     crumb="$(${curl_cmd} | ${jq_cli} -r '.crumbRequestField + ":" + .crumb')"
     debug_output "crumb=${crumb}"
     extra_curl_parameters="-H ${crumb} ${extra_curl_parameters}"
   fi
 
-  curl_cmd="${curl_cli:-curl} -X ${verb} -s -L --user ${towerify_login}:${towerify_password} ${extra_curl_parameters} ${api_url}"
+  curl_cmd="${curl_cli:-curl} -X ${verb} -s -L --user ${g_towerify_login}:${g_towerify_password} ${extra_curl_parameters} ${api_url}"
   debug_output "curl_cmd=${curl_cmd}"
   result=$(${curl_cmd})
   return_code=$?

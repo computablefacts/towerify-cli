@@ -4,8 +4,8 @@ Describe 'jenkins.sh'
   Include src/lib/colors.sh
 
   declare -g template_dir="../conf/templates"
-  declare -g jenkins_domain='my.jenkins.domain'
-  declare -g towerify_login=my_login
+  declare -g g_jenkins_domain='my.jenkins.domain'
+  declare -g g_towerify_login=my_login
 
   Describe 'is_json_valid()'
 
