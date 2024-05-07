@@ -68,7 +68,7 @@ commands:
       validate: app_name
     - name: type
       help: Type de l'application
-      allowed: [ask, static, lamp]
+      allowed: [ask, static, laravel-9, laravel-10]
       default: ask
 
   flags:
