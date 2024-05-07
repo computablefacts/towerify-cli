@@ -13,6 +13,7 @@ flags:
     help: Nom du profil de connexion à utiliser
     arg: profile
     default: default
+    validate: profile
 
 commands:
 - name: configure
