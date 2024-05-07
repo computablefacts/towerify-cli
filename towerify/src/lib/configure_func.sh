@@ -43,13 +43,6 @@ towerify_configure() {
 
   debug_output "password=$password"
 
-  # Ecrire dans le fichier de conf
-  debug_output "CONFIG_FILE=$CONFIG_FILE"
-  config_set "${profile}.towerify_domain" $domain
-  config_set "${profile}.towerify_login" $login
-  config_set "${profile}.towerify_password" $password
-  config_set "${profile}.jenkins_domain" $jenkins_domain
-
   # Debug config.ini
   [[ $g_debug -eq 1 ]] && config_show
 
@@ -62,6 +55,13 @@ towerify_configure() {
     echo
     exit 1
   fi
+  # Ecrire dans le fichier de conf
+  debug_output "CONFIG_FILE=$CONFIG_FILE"
+  config_set "${profile}.towerify_domain" $domain
+  config_set "${profile}.towerify_login" $login
+  config_set "${profile}.towerify_password" $password
+  config_set "${profile}.jenkins_domain" $jenkins_domain
+
   echo "$(green_bold "==> Connexion réussie.")"
   echo
   echo "$(green_bold "Towerify CLI est correctement configuré pour l'instance Towerify ${domain}")"
