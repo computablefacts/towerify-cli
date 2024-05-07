@@ -5,6 +5,7 @@ Describe 'towerify init'
   Include src/lib/colors.sh
   Include src/lib/ask.sh
   Include src/lib/init_func.sh
+  Include src/lib/validate.sh
 
   declare -g template_dir="../conf/templates"
   declare -g app_config_dir="./towerify.shellspec"
