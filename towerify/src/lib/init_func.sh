@@ -21,6 +21,14 @@ towerify_init() {
 
   debug_output "name=$name"
 
+  # Validate app name
+  local message=$(validate_app_name $name)
+  if [[ -n "$message" ]]; then
+    echo "$(red_bold $message)"
+    echo
+    exit 1
+  fi
+
   # Ask for type if needed
   if [[ "$type" = "ask" ]]; then
     display_question "Choissisez un type d'application"
