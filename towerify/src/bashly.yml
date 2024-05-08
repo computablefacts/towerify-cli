@@ -1,6 +1,6 @@
 name: towerify
 help: Towerify CLI. See https://docs.towerify.io/cli/
-version: 0.5.4
+version: 0.5.5
 
 flags:
   - &flag_debug
