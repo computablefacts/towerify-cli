@@ -131,7 +131,7 @@ send_completions() {
   echo $'      ;;'
   echo $''
   echo $'    *\'init\'*)'
-  echo $'      while read -r; do COMPREPLY+=( "$REPLY" ); done < <( compgen -W "$(_towerify_completions_filter "--debug --force --help -d -f -h ask lamp static")" -- "$cur" )'
+  echo $'      while read -r; do COMPREPLY+=( "$REPLY" ); done < <( compgen -W "$(_towerify_completions_filter "--debug --force --help -d -f -h ask laravel-10 laravel-9 static")" -- "$cur" )'
   echo $'      ;;'
   echo $''
   echo $'    *)'

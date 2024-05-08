@@ -30,7 +30,7 @@ Describe 'towerify init'
 
     Parameters
       'static' 'my-app-static' '1'
-      'laravel-10' 'my-app-l10' '2'
+      'laravel-10' 'my-app-l10' '3'
     End
 
 
