@@ -253,7 +253,7 @@ Describe 'validate.sh'
       It "should fail with '$1'"
 
         When call validate_env "$1"
-        The output should include "le nom de l'environnement doit commencer par un de ces caractères [a-z]"
+        The output should include "le nom de l'environnement doit commencer par une lettre minuscule"
       End
     End
 

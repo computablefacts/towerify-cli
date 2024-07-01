@@ -36,7 +36,7 @@ validate_app_name() {
 
 validate_env() {
   if [[ ! "$1" =~ ^[a-z].* ]]; then
-    echo "le nom de l'environnement doit commencer par un de ces caractères [a-z]"
+    echo "le nom de l'environnement doit commencer par une lettre minuscule"
   elif [[ ! "$1" =~ ^[a-z][a-z0-9-]*$ ]]; then
     echo "le nom de l'environnement ne doit contenir que les caractères [a-z0-9-]"
   elif [[ "$1" =~ ^.*-$ ]]; then
