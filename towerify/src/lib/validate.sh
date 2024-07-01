@@ -24,6 +24,16 @@ validate_profile() {
   fi
 }
 
+validate_profile_should_exist() {
+  validate_profile $1
+  if ! config_has_key "$1.towerify_domain"; then
+    echo "le profil $1 n'existe pas"
+    echo
+    echo "Vous pouvez configurer ce profile avec :"
+    echo "  $(bold "towerify configure --profile $1")"
+  fi
+}
+
 validate_app_name() {
   if [[ ! "$1" =~ ^[a-zA-Z].* ]]; then
     echo "le nom de l'application doit commencer par un de ces caractères [a-zA-Z]"

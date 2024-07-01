@@ -1,5 +1,8 @@
 Describe 'validate.sh'
   Include src/lib/validate.sh
+  Include src/lib/config.sh
+  Include src/lib/ini.sh
+  Include src/lib/colors.sh
 
   Describe 'validate_key_value'
     Describe 'valid'
@@ -160,6 +163,58 @@ Describe 'validate.sh'
         The output should include 'le profil doit avoir 32 caractères maximum'
       End
     End
+  End
+
+  Describe 'validate_profile_should_exist'
+    declare -g dummy_config_dir="./towerify.shellspec"
+    CONFIG_FILE="$dummy_config_dir/config.ini"
+    Path towerify-config-file=$CONFIG_FILE
+
+    empty_towerify_config() {
+      mkdir -p $dummy_config_dir
+      if [[ -e $CONFIG_FILE ]]; then
+        rm $CONFIG_FILE
+        touch $CONFIG_FILE
+      fi
+    }
+
+    add_towerify_profile() {
+      echo "[${1-default}]" > $CONFIG_FILE
+      echo 'jenkins_domain=jenkins.my-corp2.towerify.io' >> $CONFIG_FILE
+      echo 'towerify_domain=my-corp2.towerify.io' >> $CONFIG_FILE
+      echo 'towerify_login=my_login2' >> $CONFIG_FILE
+      echo 'towerify_password=MyP@ssw0rD2' >> $CONFIG_FILE
+    }
+
+    Describe 'valid'
+      Parameters
+        'x'
+        'AWS-02'
+        'xyz-02'
+        'abcdefghif1234567890123456789012'
+      End
+
+      It "should succeed with '$1'"
+
+        add_towerify_profile $1
+
+        When call validate_profile_should_exist "$1"
+        The output should be blank
+      End
+    End
+
+    Describe 'profile does not exist'
+
+      It "should fail for my-profile profil"
+
+        When call validate_profile_should_exist "my-profile"
+        # Dump
+        The output should include "le profil my-profile n'existe pas"
+        The output should include "Vous pouvez configurer ce profile avec"
+        The output should include "towerify configure --profile my-profile"
+      End
+    End
+
   End
 
   Describe 'validate_app_name'
