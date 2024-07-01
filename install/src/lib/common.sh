@@ -24,7 +24,7 @@ download_towerify() {
   install_dir=$1
 
   tempdirname=$(mktemp -d)
-  curl --progress-bar https://acme.towerify.io/cli/towerify.tar.gz | tar -zx -C $tempdirname
+  curl --progress-bar https://cli.towerify.io/towerify.tar.gz | tar -zx -C $tempdirname
 
   cp -R $tempdirname/* $install_dir
 

@@ -6,3 +6,5 @@ config:
     dev:
       domain: acme.towerify.io
       path: cli
+    prod:
+      domain: cli.towerify.io

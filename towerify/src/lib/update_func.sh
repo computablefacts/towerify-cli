@@ -2,7 +2,7 @@ download_towerify() {
   install_dir=$1
 
   tempdirname=$(mktemp -d)
-  curl --progress-bar https://acme.towerify.io/cli/towerify.tar.gz | tar -zx -C $tempdirname
+  curl --progress-bar https://cli.towerify.io/towerify.tar.gz | tar -zx -C $tempdirname
 
   # Update templates
   rm -Rf $install_dir/templates
@@ -29,7 +29,7 @@ towerify_update() {
 
   if [[ $force -eq 0 ]]; then
     # Check version to decide if we need to update
-    new_version=$(curl -s -L https://acme.towerify.io/cli/version.txt)
+    new_version=$(curl -s -L https://cli.towerify.io/version.txt)
     debug_output "version=$version"
     debug_output "new_version=$new_version"
 
