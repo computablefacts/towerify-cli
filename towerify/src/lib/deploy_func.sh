@@ -28,6 +28,25 @@ towerify_deploy() {
   local last_build_number=0
   if ! jenkins_check_job_exists $jenkins_job_name; then
     # Le job n'existe pas
+    # Demande de confirmation
+    progress_update "confirmation" "yellow"
+    echo
+
+    echo "$(yellow_bold "C'est la première fois que vous déployez cette application pour :")"
+    echo "$(yellow_bold "- le profil ${g_profile} (${g_towerify_domain})")"
+    echo "$(yellow_bold "- l'environnement ${app_env}")"
+    echo
+    display_question "Voulez-vous continuer"
+    confirm_deploy=$(ask_choices "Oui" "Non")
+
+    if [ "$confirm_deploy" == "Non" ]; then
+      progress_stop "Cancelled" "red_bold"
+      echo "$(red_bold "==> Déploiement annulé.")"
+      echo
+      exit 1
+    fi
+
+    # Création du job
     progress_update "création" "yellow"
     if ! jenkins_create_job $jenkins_job_name $app_type; then
       progress_stop "KO" "red_bold"
