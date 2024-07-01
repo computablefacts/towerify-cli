@@ -224,7 +224,7 @@ Describe 'validate.sh'
   # env will be use to make the app URL/domain so it should
   # respect the RFC-1035 for preferred name syntax
   # See: https://www.rfc-editor.org/rfc/rfc1035.html#section-2.3.1
-  # So: 63 characters max, starting with a letter and contain only letters, digits and hyphen (`-`)
+  # So: 63 characters max, starting with a letter and contain only letters, digits and hyphen (`-`) and should not ending by an hyphen
   # Here we prefer to limit size to 32 chars max because the whole domain is limited to 253 chars max.
   # And we prefer using only lowercase letters
   Describe 'validate_env'
@@ -282,6 +282,20 @@ Describe 'validate.sh'
 
         When call validate_env "$1"
         The output should include "le nom de l'environnement doit avoir 32 caractères maximum"
+      End
+    End
+
+    Describe 'no hyphen at the end'
+      Parameters
+        'a-'
+        'xyz-02-'
+        'abcdefghif123456789012345678901-'
+      End
+
+      It "should fail with '$1'"
+
+        When call validate_env "$1"
+        The output should include "le nom de l'environnement ne doit pas se terminer par un tiret"
       End
     End
   End
