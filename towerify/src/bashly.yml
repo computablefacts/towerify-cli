@@ -1,6 +1,6 @@
 name: towerify
 help: Towerify CLI. See https://docs.towerify.io/cli/
-version: 0.5.5
+version: 0.6
 
 flags:
   - &flag_debug
@@ -97,8 +97,8 @@ commands:
       short: -e
       arg: env
       help: Environnement
-      allowed: [dev, staging, prod]
       default: dev
+      validate: env
 
 
 - name: secrets

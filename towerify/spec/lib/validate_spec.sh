@@ -220,4 +220,69 @@ Describe 'validate.sh'
       End
     End
   End
+
+  # env will be use to make the app URL/domain so it should
+  # respect the RFC-1035 for preferred name syntax
+  # See: https://www.rfc-editor.org/rfc/rfc1035.html#section-2.3.1
+  # So: 63 characters max, starting with a letter and contain only letters, digits and hyphen (`-`)
+  # Here we prefer to limit size to 32 chars max because the whole domain is limited to 253 chars max.
+  # And we prefer using only lowercase letters
+  Describe 'validate_env'
+    Describe 'valid'
+      Parameters
+        'x'
+        'xyz-02'
+        'abcdefghif1234567890123456789012'
+      End
+
+      It "should succeed with '$1'"
+
+        When call validate_env "$1"
+        The output should be blank
+      End
+    End
+
+    Describe 'invalid first char'
+      Parameters
+        ''
+        '-profile'
+        '_pro'
+        '3-AWS'
+      End
+
+      It "should fail with '$1'"
+
+        When call validate_env "$1"
+        The output should include "le nom de l'environnement doit commencer par un de ces caractères [a-z]"
+      End
+    End
+
+    Describe 'invalid chars'
+      Parameters
+        'a_xyz'
+        'a=34'
+        'a_pro'
+        'a-AWS_'
+        'aBcDe'
+      End
+
+      It "should fail with '$1'"
+
+        When call validate_env "$1"
+        The output should include "le nom de l'environnement ne doit contenir que les caractères [a-z0-9-]"
+      End
+    End
+
+    Describe 'too long'
+      Parameters
+        'abcdefghif12345678901234567890123'
+      End
+
+      It "should fail with '$1'"
+
+        When call validate_env "$1"
+        The output should include "le nom de l'environnement doit avoir 32 caractères maximum"
+      End
+    End
+  End
 End
