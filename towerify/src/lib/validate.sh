@@ -29,7 +29,7 @@ validate_profile_should_exist() {
   if ! config_has_key "$1.towerify_domain"; then
     echo "le profil $1 n'existe pas"
     echo
-    echo "Vous pouvez configurer ce profile avec :"
+    echo "Vous pouvez configurer ce profil avec :"
     echo "  $(bold "towerify configure --profile $1")"
   fi
 }

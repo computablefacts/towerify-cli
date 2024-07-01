@@ -210,7 +210,7 @@ Describe 'validate.sh'
         When call validate_profile_should_exist "my-profile"
         # Dump
         The output should include "le profil my-profile n'existe pas"
-        The output should include "Vous pouvez configurer ce profile avec"
+        The output should include "Vous pouvez configurer ce profil avec"
         The output should include "towerify configure --profile my-profile"
       End
     End
