@@ -19,6 +19,26 @@ Elle génère les 2 scripts en version production.
 Le script d'installation se trouve dans `./install/install` et
 le script Towerify CLI se trouve dans `./towerify/towerify`.
 
+## Publication
+
+Etape à faire après la build.
+
+Ce mettre à la racine de la repo et faire la commande :
+```
+towerify deploy
+```
+
+Towerify CLI sera publié sur https://acme.towerify.io/cli/.
+
+Ce mettre à la racine de la repo et faire la commande :
+```
+towerify deploy --env=prod
+```
+
+Towerify CLI sera publié sur https://cli.towerify.io/.
+
+La publication en DEV correspond à l'ancienne URL et sera bientôt supprimée.
+
 ## Developpement
 
 Le plus pratique pour développer un script est qu'il se regénère 
