@@ -20,9 +20,15 @@ echo "$(bold "Installation de Towerify CLI pour l'instance $towerify_domain")"
 download_towerify $install_dir
 echo
 
-# Add a link into a directory in $PATH
-# TODO: verify that $HOME/.local/bin exist and is in the PATH
+# Add a link into a directory in $PATH (Debian add ~/.local/bin if it exists)
+mkdir -p $HOME/.local/bin
 ln -sf $towerify_script $HOME/.local/bin
+
+# from Debian ~/.profile to add the directory to the PATH if we just create it
+# set PATH so it includes user's private bin
+if [ -d "$HOME/.local/bin" ] ; then
+    PATH="$HOME/.local/bin:$PATH"
+fi
 
 # Ecrire le fichier de conf (URL+Token) dans $HOME/.towerify/config.ini
 config_set towerify_domain $towerify_domain
