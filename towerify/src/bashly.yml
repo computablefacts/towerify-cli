@@ -156,10 +156,10 @@ commands:
 dependencies:
   curl:
     command: [curl]
-    help: run 'sudo apt-get install -y curl'
+    help: "Debian : 'sudo apt-get install -y curl' - MacOS : 'brew install curl'"
   jq:
     command: [jq]
-    help: run 'sudo apt-get install -y jq'
+    help: "Debian : 'sudo apt-get install -y jq' - MacOS : 'brew install jq'"
   yq:
     command: [yq]
-    help: run 'sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && sudo chmod +x /usr/bin/yq'
+    help: "Debian : 'sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq && sudo chmod +x /usr/bin/yq' - MacOS : 'brew install yq'"
