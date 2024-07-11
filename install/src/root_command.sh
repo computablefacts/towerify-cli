@@ -24,10 +24,20 @@ echo
 mkdir -p $HOME/.local/bin
 ln -sf $towerify_script $HOME/.local/bin
 
-# from Debian ~/.profile to add the directory to the PATH if we just create it
+# Copied from Debian ~/.profile to add the directory to the PATH if we just create it
 # set PATH so it includes user's private bin
 if [ -d "$HOME/.local/bin" ] ; then
     PATH="$HOME/.local/bin:$PATH"
+fi
+
+# For MacOS that use /bin/zsh by default
+# set PATH so it includes user's private bin
+if [ "$SHELL" == "/bin/zsh" ]; then
+    echo 'export PATH=$HOME/.local/bin:$PATH' >> ~/.zshrc
+    
+    echo
+    echo "$(bold "Vous utilisez zsh. Tapez cette commande pour ajouter towerify à votre PATH :")"
+    echo "$(yellow_bold "source ~/.zshrc")"
 fi
 
 # Ecrire le fichier de conf (URL+Token) dans $HOME/.towerify/config.ini
