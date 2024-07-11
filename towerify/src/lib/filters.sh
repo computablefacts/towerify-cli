@@ -25,3 +25,47 @@ filter_towerify_config_should_exist() {
     echo "  $(bold "towerify configure")"
   fi
 }
+
+filter_tar_should_be_gnu_tar() {
+
+  # Vérifier si la commande tar existe
+  if ! command -v tar > /dev/null; then
+
+    # La commande 'tar' n'existe pas
+    if [[ "$(uname)" == "Darwin" ]]; then
+      # MacOS
+
+      # Vérifier si la commande gtar existe
+      if ! command -v gtar > /dev/null; then
+        # La commande 'gtar' n'existe pas
+        echo "Vous devez installer GNU tar."
+        echo "brew install gnu-tar"
+      fi
+
+    else
+      # Non MacOS
+      echo "Vous devez installer tar."
+      echo "sudo apt-get install -y tar"
+    fi
+
+  else 
+
+    # La commande 'tar' existe
+    if [[ "$(uname)" == "Darwin" ]]; then
+      # MacOS
+
+      # Vérifier si la commande tar est GNU tar
+      if ! tar --version | grep -q "GNU tar"; then
+        # Vérifier si la commande gtar existe
+        if ! command -v gtar > /dev/null; then
+          # La commande 'gtar' n'existe pas
+          echo "Vous devez installer GNU tar."
+          echo "brew install gnu-tar"
+        fi
+      fi
+
+    # Je suppose que si 'tar' existe pour les non MacOS alors c'est GNU tar
+    fi
+
+  fi
+}
