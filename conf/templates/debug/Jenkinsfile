@@ -139,6 +139,20 @@ pipeline {
             }
         }
 
+        stage('Apply secrets') {
+            steps {
+                script {
+                    try {
+                        withCredentials([file(credentialsId: "${towerify_app_id}", variable: 'envfile')]) {
+                            sh "cp ${envfile} ./.env"
+                        }
+                    } catch (Exception e) {
+                        sh 'touch ./.env'
+                    }
+                }
+            }
+        }
+
         stage('Prepare Towerify App template') {
             steps {
                 script {
@@ -165,14 +179,6 @@ pipeline {
                         sh "sudo yunohost domain add ${towerify_app_domain}"
                         sh 'sudo yunohost diagnosis run web dnsrecords --force'
                         sh "sudo yunohost domain cert install ${towerify_app_domain}"
-                    }
-
-                    try {
-                        withCredentials([file(credentialsId: "${towerify_app_id}", variable: 'envfile')]) {
-                            sh "cp ${envfile} ./.env"
-                        }
-                    } catch (Exception e) {
-                        sh 'touch ./.env'
                     }
 
                     print "APP_ENV=${APP_ENV}"
