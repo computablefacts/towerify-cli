@@ -1,0 +1,229 @@
+// Global variables
+def app_config = null
+def dockerfile_filename = 'Dockerfile'
+def docker_image_name = null
+def docker_image_tag = null
+
+def dockerswarm_filename = 'stack.yaml'
+
+def nginxconf_filename = 'nginx.conf'
+
+pipeline {
+    agent any
+
+    options {
+        disableConcurrentBuilds()
+    }
+
+    parameters {
+        stashedFile 'app.tar.gz'
+        string(name: 'TOWERIFY_MAIN_DOMAIN', defaultValue: 'myapps.addapps.io', description: 'Your Towerify main domain name')
+        string(name: 'APP_ENV', defaultValue: 'dev', description: 'Environment where the application will be deployed')
+    }
+
+    environment {
+        ENV_DOCKER_TAG = "${APP_ENV}-latest"
+        TOWERIFY_APP_TEMPLATE_PATH = 'docker_swarm_ynh'
+    }
+
+    stages {
+        stage('Uncompress') {
+            steps {
+                sh '''
+                    pwd
+                    ls -alh
+                    rm -Rf ./app
+                    mkdir -p ./app
+                '''
+                dir('app') {
+                    sh 'pwd'
+                    // TODO: use withFileParameter, see: https://www.jenkins.io/doc/pipeline/steps/file-parameters/#withfileparameter-bind-file-parameter
+                    /* groovylint-disable-next-line DuplicateStringLiteral */
+                    unstash 'app.tar.gz'
+                    sh '''
+                        ls -alh
+                        tar -xvf app.tar.gz
+                        ls -alh
+                    '''
+                }
+                sh 'ls -alh'
+            }
+        }
+
+        stage('Read config') {
+            steps {
+                script {
+                    app_config = readYaml file: 'app/towerify/config.yaml'
+                    app_name = app_config.get('name') && app_config.name ? app_config.name : null
+                    if (!app_name) {
+                        error 'Application name should be defined (key name:)'
+                    }
+                    echo "App name: ${app_name}"
+                    app_type = app_config.get('type') && app_config.type ? app_config.type : null
+                    if (!app_type) {
+                        error 'Application type should be defined (key type:)'
+                    }
+                    echo "App type: ${app_type} (DEBUG)"
+                }
+            }
+        }
+
+        stage('Prepare Dockerfile') {
+            steps {
+                script {
+                    // If a Dockerfile key exists in app_config
+                    if (app_config.get('config') && app_config.config.get('dockerfile')) {
+                        // we change the Dockerfile to use
+                        dockerfile_filename = 'app/' + app_config.config.dockerfile
+                    } else {
+                        // We use the default Dockerfile
+                        dockerfile_filename = "conf/templates/${app_type}/Dockerfile"
+                    }
+
+                    echo "dockerfile_filename=${dockerfile_filename}"
+                    sh "cat ${dockerfile_filename}"
+
+                    docker_image_name = "towerify/${app_name}"
+                    docker_image_tag = sh(script: "echo twr-${env.BUILD_TAG} | sed -r 's#%2F#_#g'", returnStdout: true).trim()
+                    echo "image=${docker_image_name}:${docker_image_tag}"
+                }
+            }
+        }
+
+        stage('Prepare Docker Swarm Stack') {
+            steps {
+                script {
+                    // If a stackfile key exists in app_config
+                    /* groovylint-disable-next-line DuplicateStringLiteral */
+                    if (app_config.get('config') && app_config.config.get('stackfile')) {
+                        // we change the Docker Swarm Stack file to use
+                        /* groovylint-disable-next-line DuplicateStringLiteral */
+                        dockerswarm_filename = 'app/' + app_config.config.stackfile
+                    } else {
+                        // We use the default Docker Swarm Stack file
+                        dockerswarm_filename = "conf/templates/${app_type}/stack.yaml"
+                    }
+
+                    echo "dockerswarm_filename=${dockerswarm_filename}"
+                    sh "cat ${dockerswarm_filename}"
+                }
+            }
+        }
+
+        stage('Prepare nginx conf') {
+            steps {
+                script {
+                    // If a nginxconf key exists in app_config
+                    /* groovylint-disable-next-line DuplicateStringLiteral */
+                    if (app_config.get('config') && app_config.config.get('nginxconf')) {
+                        // we change the nginx conf file to use
+                        /* groovylint-disable-next-line DuplicateStringLiteral */
+                        nginxconf_filename = 'app/' + app_config.config.nginxconf
+                    } else {
+                        // We use the default nginx conf file
+                        nginxconf_filename = "conf/templates/${app_type}/nginx.conf"
+                    }
+
+                    echo "nginxconf_filename=${nginxconf_filename}"
+                    sh "cat ${nginxconf_filename}"
+                }
+            }
+        }
+
+        stage('Build Docker image') {
+            steps {
+                script {
+                    // Build...
+                    dockerImage = docker.build("${docker_image_name}:${docker_image_tag}", "-f ${dockerfile_filename} ./app")
+                }
+            }
+        }
+
+        stage('Prepare Towerify App template') {
+            steps {
+                script {
+                    towerify_app_id = "${app_name}_${APP_ENV}"
+                    towerify_app_name_short = app_name.substring(0, 2)
+                    towerify_app_domain = "${APP_ENV}.${app_name}.${TOWERIFY_MAIN_DOMAIN}"
+                    towerify_app_path = '/'
+                    towerify_app_not_installed = sh(script: "sudo yunohost app list | grep ${towerify_app_id}", returnStatus: true)
+
+                    // Read app_config to change domain and path to publish app
+                    /* groovylint-disable-next-line DuplicateStringLiteral */
+                    app_config_env = app_config.get('config') && app_config.config.get('envs') && app_config.config.envs.get(APP_ENV)
+                        ? app_config.config.envs.get(APP_ENV)
+                        : null
+                    if (app_config_env) {
+                        echo 'Specific env settings are defined'
+                        towerify_app_domain = app_config_env.get('domain') ? app_config_env.domain : towerify_app_domain
+                        towerify_app_path = app_config_env.get('path') ? app_config_env.path : towerify_app_path
+                    }
+
+                    // Create domain (and LE certificate) on YunoHost if not already exists
+                    towerify_domain_not_exist = sh(script: "sudo yunohost domain list | grep ${towerify_app_domain}", returnStatus: true)
+                    if (towerify_domain_not_exist == 1) {
+                        sh "sudo yunohost domain add ${towerify_app_domain}"
+                        sh 'sudo yunohost diagnosis run web dnsrecords --force'
+                        sh "sudo yunohost domain cert install ${towerify_app_domain}"
+                    }
+
+                    withCredentials([file(credentialsId: "${towerify_app_id}", variable: 'envfile')]) {
+                        sh "cp ${envfile} ./.env"
+                    }
+
+                    print "APP_ENV=${APP_ENV}"
+                    print "ENV_DOCKER_TAG=${env.ENV_DOCKER_TAG}"
+                    print "towerify_app_id=${towerify_app_id}"
+                    print "towerify_app_name_short=${towerify_app_name_short}"
+                    print "towerify_app_domain=${towerify_app_domain}"
+                    print "towerify_app_path=${towerify_app_path}"
+                    print "towerify_app_not_installed=${towerify_app_not_installed}"
+                }
+
+                /* groovylint-disable-next-line DuplicateListLiteral, DuplicateMapLiteral, DuplicateStringLiteral */
+                checkout changelog: false, scm: scmGit(branches: [[name: '*/main']], extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${TOWERIFY_APP_TEMPLATE_PATH}"]], userRemoteConfigs: [[url: 'https://github.com/computablefacts/docker_swarm_ynh']])
+
+                dir(TOWERIFY_APP_TEMPLATE_PATH) {
+                    sh 'cp ../.env ./conf/.env'
+                    sh "cp ../${dockerswarm_filename} ./conf/stack.yaml"
+                    sh "cp ../${nginxconf_filename} ./conf/nginx.conf"
+                    sh "./customize.sh --app-id ${towerify_app_id} --name '${towerify_app_name_short} ${APP_ENV}' "
+                    sh "sed -ri 's#__DOCKER_IMAGE_NAME__#${docker_image_name}#' ./conf/stack.yaml"
+                    sh "sed -ri 's/__DOCKER_IMAGE_TAG__/${docker_image_tag}/' ./conf/stack.yaml"
+                    sh "sed -ri 's/__TOWERIFY_ENV__/${APP_ENV}/' ./conf/stack.yaml"
+                }
+            }
+        }
+
+        stage('Create Swarm Network') {
+            steps {
+                script {
+                    sh "sudo docker network create ${towerify_app_id} --driver overlay || true"
+                }
+            }
+        }
+
+        stage('Towerify Publish') {
+            steps {
+                script {
+                    sh "sudo docker tag ${docker_image_name}:${docker_image_tag} ${docker_image_name}:${env.ENV_DOCKER_TAG}"
+                }
+                dir(TOWERIFY_APP_TEMPLATE_PATH) {
+                    script {
+                        if (towerify_app_not_installed == 1) {
+                            sh "sudo yunohost app install . --force --args=\"domain=${towerify_app_domain}&path=${towerify_app_path}&init_main_permission=visitors\" "
+                        } else {
+                            sh "sudo yunohost app upgrade ${towerify_app_id} --file . --force --no-safety-backup"
+                        }
+                    }
+                }
+            }
+        }
+    }
+    post {
+        // Clean after build
+        always {
+            cleanWs deleteDirs: true, disableDeferredWipeout: true, notFailBuild: true
+        }
+    }
+}
