@@ -139,10 +139,27 @@ pipeline {
             }
         }
 
-        stage('Prepare Towerify App template') {
+        stage('Apply secrets') {
             steps {
                 script {
                     towerify_app_id = "${app_name}_${APP_ENV}"
+                    boolean credentialsExist = checkCredentials("${towerify_app_id}")
+                    if (credentialsExist) {
+                        echo "Using credentials"
+                        withCredentials([file(credentialsId: "${towerify_app_id}", variable: 'envfile')]) {
+                            sh "cp ${envfile} ./.env"
+                        }
+                    } else {
+                        echo "Credentials not found, executing default action"
+                        sh 'touch ./.env'
+                    }
+                }
+            }
+        }
+
+        stage('Prepare Towerify App template') {
+            steps {
+                script {
                     towerify_app_name_short = app_name.substring(0, 2)
                     towerify_app_domain = "${APP_ENV}.${app_name}.${TOWERIFY_MAIN_DOMAIN}"
                     towerify_app_path = '/'
@@ -187,23 +204,6 @@ pipeline {
                     sh "sed -ri 's#__DOCKER_IMAGE_NAME__#${docker_image_name}#' ./conf/stack.yaml"
                     sh "sed -ri 's/__DOCKER_IMAGE_TAG__/${docker_image_tag}/' ./conf/stack.yaml"
                     sh "sed -ri 's/__TOWERIFY_ENV__/${APP_ENV}/' ./conf/stack.yaml"
-                }
-            }
-        }
-
-        stage('Apply secrets') {
-            steps {
-                script {
-                    boolean credentialsExist = checkCredentials("${towerify_app_id}")
-                    if (credentialsExist) {
-                        echo "Using credentials"
-                        withCredentials([file(credentialsId: "${towerify_app_id}", variable: 'envfile')]) {
-                            sh "cp ${envfile} ./.env"
-                        }
-                    } else {
-                        echo "Credentials not found, executing default action"
-                        sh 'touch ./.env'
-                    }
                 }
             }
         }
