@@ -139,10 +139,27 @@ pipeline {
             }
         }
 
-        stage('Prepare Towerify App template') {
+        stage('Apply secrets') {
             steps {
                 script {
                     towerify_app_id = "${app_name}_${APP_ENV}"
+                    boolean credentialsExist = checkCredentials("${towerify_app_id}")
+                    if (credentialsExist) {
+                        echo "Using credentials"
+                        withCredentials([file(credentialsId: "${towerify_app_id}", variable: 'envfile')]) {
+                            sh "cp ${envfile} ./.env"
+                        }
+                    } else {
+                        echo "Credentials not found, executing default action"
+                        sh 'touch ./.env'
+                    }
+                }
+            }
+        }
+
+        stage('Prepare Towerify App template') {
+            steps {
+                script {
                     towerify_app_name_short = app_name.substring(0, 2)
                     towerify_app_domain = "${APP_ENV}.${app_name}.${TOWERIFY_MAIN_DOMAIN}"
                     towerify_app_path = '/'
@@ -165,10 +182,6 @@ pipeline {
                         sh "sudo yunohost domain add ${towerify_app_domain}"
                         sh 'sudo yunohost diagnosis run web dnsrecords --force'
                         sh "sudo yunohost domain cert install ${towerify_app_domain}"
-                    }
-
-                    withCredentials([file(credentialsId: "${towerify_app_id}", variable: 'envfile')]) {
-                        sh "cp ${envfile} ./.env"
                     }
 
                     print "APP_ENV=${APP_ENV}"
@@ -225,5 +238,17 @@ pipeline {
         always {
             cleanWs deleteDirs: true, disableDeferredWipeout: true, notFailBuild: true
         }
+    }
+}
+
+boolean checkCredentials(String credentialsId) {
+    try {
+        withCredentials([file(credentialsId: credentialsId, variable: 'envfile')]) {
+            // Si nous atteignons ce point, les identifiants existent
+            return true
+        }
+    } catch (Exception e) {
+        // Si une exception est capturée, les identifiants n'existent pas
+        return false
     }
 }
