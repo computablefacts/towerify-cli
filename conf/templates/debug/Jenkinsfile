@@ -142,11 +142,14 @@ pipeline {
         stage('Apply secrets') {
             steps {
                 script {
-                    try {
+                    boolean credentialsExist = checkCredentials("${towerify_app_id}")
+                    if (credentialsExist) {
+                        echo "Using credentials"
                         withCredentials([file(credentialsId: "${towerify_app_id}", variable: 'envfile')]) {
                             sh "cp ${envfile} ./.env"
                         }
-                    } catch (Exception e) {
+                    } else {
+                        echo "Credentials not found, executing default action"
                         sh 'touch ./.env'
                     }
                 }
@@ -235,5 +238,17 @@ pipeline {
         always {
             cleanWs deleteDirs: true, disableDeferredWipeout: true, notFailBuild: true
         }
+    }
+}
+
+boolean checkCredentials(String credentialsId) {
+    try {
+        withCredentials([file(credentialsId: credentialsId, variable: 'envfile')]) {
+            // Si nous atteignons ce point, les identifiants existent
+            return true
+        }
+    } catch (Exception e) {
+        // Si une exception est capturée, les identifiants n'existent pas
+        return false
     }
 }
