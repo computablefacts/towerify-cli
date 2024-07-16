@@ -143,7 +143,7 @@ pipeline {
             steps {
                 script {
                     towerify_app_id = "${app_name}_${APP_ENV}"
-                    String basic_auth_value = ''
+                    basic_auth_value = ''
                     boolean credentialsExist = checkCredentials("${towerify_app_id}")
                     if (credentialsExist) {
                         echo "Using credentials"
