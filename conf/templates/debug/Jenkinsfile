@@ -194,7 +194,7 @@ pipeline {
                 }
 
                 /* groovylint-disable-next-line DuplicateListLiteral, DuplicateMapLiteral, DuplicateStringLiteral */
-                checkout changelog: false, scm: scmGit(branches: [[name: '*/main']], extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${TOWERIFY_APP_TEMPLATE_PATH}"]], userRemoteConfigs: [[url: 'https://github.com/computablefacts/docker_swarm_ynh']])
+                checkout changelog: false, scm: scmGit(branches: [[name: '*/debug']], extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: "${TOWERIFY_APP_TEMPLATE_PATH}"]], userRemoteConfigs: [[url: 'https://github.com/computablefacts/docker_swarm_ynh']])
 
                 dir(TOWERIFY_APP_TEMPLATE_PATH) {
                     sh 'cp ../.env ./conf/.env'
