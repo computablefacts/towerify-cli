@@ -143,12 +143,14 @@ pipeline {
             steps {
                 script {
                     towerify_app_id = "${app_name}_${APP_ENV}"
+                    String basic_auth_value = ''
                     boolean credentialsExist = checkCredentials("${towerify_app_id}")
                     if (credentialsExist) {
                         echo "Using credentials"
                         withCredentials([file(credentialsId: "${towerify_app_id}", variable: 'envfile')]) {
                             sh "cp ${envfile} ./.env"
                         }
+                        basic_auth_value = sh(script: "grep '^TOWERIFY_BASIC_AUTH=' ./.env | cut -d'=' -f2 || echo ''", returnStdout: true).trim()
                     } else {
                         echo "Credentials not found, executing default action"
                         sh 'touch ./.env'
@@ -224,8 +226,9 @@ pipeline {
                 dir(TOWERIFY_APP_TEMPLATE_PATH) {
                     script {
                         if (towerify_app_not_installed == 1) {
-                            sh "sudo yunohost app install . --force --args=\"domain=${towerify_app_domain}&path=${towerify_app_path}&init_main_permission=visitors\" "
+                            sh "sudo yunohost app install . --force --args=\"domain=${towerify_app_domain}&path=${towerify_app_path}&init_main_permission=visitors&basic_auth=${basic_auth_value}\" "
                         } else {
+                            sh "sudo yunohost app setting ${towerify_app_id} basic_auth -v '${basic_auth_value}'"
                             sh "sudo yunohost app upgrade ${towerify_app_id} --file . --force --no-safety-backup"
                         }
                     }
