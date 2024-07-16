@@ -200,7 +200,7 @@ pipeline {
                     sh 'cp ../.env ./conf/.env'
                     sh "cp ../${dockerswarm_filename} ./conf/stack.yaml"
                     sh "cp ../${nginxconf_filename} ./conf/nginx.conf"
-                    sh "./customize.sh --app-id ${towerify_app_id} --name '${towerify_app_name_short} ${APP_ENV}' "
+                    sh "./customize.sh --app-id ${towerify_app_id} --name '${towerify_app_id}' "
                     sh "sed -ri 's#__DOCKER_IMAGE_NAME__#${docker_image_name}#' ./conf/stack.yaml"
                     sh "sed -ri 's/__DOCKER_IMAGE_TAG__/${docker_image_tag}/' ./conf/stack.yaml"
                     sh "sed -ri 's/__TOWERIFY_ENV__/${APP_ENV}/' ./conf/stack.yaml"
