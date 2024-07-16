@@ -152,8 +152,8 @@ pipeline {
                         }
                         basic_auth_value = sh(script: "grep '^TOWERIFY_BASIC_AUTH=' ./.env | cut -d'=' -f2 || echo ''", returnStdout: true).trim()
                     } else {
-                        echo "Credentials not found, executing default action"
-                        sh 'touch ./.env'
+                        echo "Credentials not found, emptying .env file"
+                        sh "echo -n '' ./.env"
                     }
                 }
             }
