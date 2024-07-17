@@ -150,7 +150,8 @@ pipeline {
                         withCredentials([file(credentialsId: "${towerify_app_id}", variable: 'envfile')]) {
                             sh "cp ${envfile} ./.env"
                         }
-                        basic_auth_value = sh(script: "grep '^TOWERIFY_BASIC_AUTH=' ./.env | cut -d'=' -f2 || echo ''", returnStdout: true).trim()
+                        // basic_auth_value = sh(script: "grep '^TOWERIFY_BASIC_AUTH=' ./.env | cut -d'=' -f2 || echo ''", returnStdout: true).trim()
+                        basic_auth_value = sh(script: "awk -F'=' '/^TOWERIFY_BASIC_AUTH=/{print \$2}' ./.env || echo ''", returnStdout: true).trim()
                     } else {
                         echo "Credentials not found, emptying .env file"
                         sh "echo -n '' ./.env"
