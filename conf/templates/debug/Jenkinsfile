@@ -151,7 +151,7 @@ pipeline {
                             sh "cp ${envfile} ./.env"
                         }
                         basic_auth_value = sh(script: "grep '^TOWERIFY_BASIC_AUTH=' ./.env | cut -d'=' -f2 || echo ''", returnStdout: true).trim()
-                        basic_auth_value = basic_auth_value.replace('$', '\\$')  // Escape '$' in the extracted value
+                        // basic_auth_value = basic_auth_value.replace('$', '\\$')  // Escape '$' in the extracted value
                     } else {
                         echo "Credentials not found, emptying .env file"
                         sh "echo -n '' ./.env"
