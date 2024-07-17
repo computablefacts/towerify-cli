@@ -155,6 +155,7 @@ pipeline {
                         echo "Credentials not found, emptying .env file"
                         sh "echo -n '' ./.env"
                     }
+                    print "basic_auth_value=${basic_auth_value}"
                 }
             }
         }
