@@ -143,16 +143,20 @@ pipeline {
             steps {
                 script {
                     towerify_app_id = "${app_name}_${APP_ENV}"
+                    basic_auth_value = ''
                     boolean credentialsExist = checkCredentials("${towerify_app_id}")
                     if (credentialsExist) {
                         echo "Using credentials"
                         withCredentials([file(credentialsId: "${towerify_app_id}", variable: 'envfile')]) {
                             sh "cp ${envfile} ./.env"
                         }
+                        basic_auth_value = sh(script: "grep '^TOWERIFY_BASIC_AUTH=' ./.env | cut -d'=' -f2 || echo ''", returnStdout: true).trim()
+                        // basic_auth_value = basic_auth_value.replace('$', '\\$')  // Escape '$' in the extracted value
                     } else {
-                        echo "Credentials not found, executing default action"
-                        sh 'touch ./.env'
+                        echo "Credentials not found, emptying .env file"
+                        sh "echo -n '' ./.env"
                     }
+                    print "basic_auth_value=${basic_auth_value}"
                 }
             }
         }
@@ -200,7 +204,7 @@ pipeline {
                     sh 'cp ../.env ./conf/.env'
                     sh "cp ../${dockerswarm_filename} ./conf/stack.yaml"
                     sh "cp ../${nginxconf_filename} ./conf/nginx.conf"
-                    sh "./customize.sh --app-id ${towerify_app_id} --name '${towerify_app_name_short} ${APP_ENV}' "
+                    sh "./customize.sh --app-id ${towerify_app_id} --name '${towerify_app_id}' "
                     sh "sed -ri 's#__DOCKER_IMAGE_NAME__#${docker_image_name}#' ./conf/stack.yaml"
                     sh "sed -ri 's/__DOCKER_IMAGE_TAG__/${docker_image_tag}/' ./conf/stack.yaml"
                     sh "sed -ri 's/__TOWERIFY_ENV__/${APP_ENV}/' ./conf/stack.yaml"
@@ -224,8 +228,9 @@ pipeline {
                 dir(TOWERIFY_APP_TEMPLATE_PATH) {
                     script {
                         if (towerify_app_not_installed == 1) {
-                            sh "sudo yunohost app install . --force --args=\"domain=${towerify_app_domain}&path=${towerify_app_path}&init_main_permission=visitors\" "
+                            sh "sudo yunohost app install . --force --args=\"domain=${towerify_app_domain}&path=${towerify_app_path}&init_main_permission=visitors&basic_auth=${basic_auth_value}\" "
                         } else {
+                            sh "sudo yunohost app setting ${towerify_app_id} basic_auth -v '${basic_auth_value}'"
                             sh "sudo yunohost app upgrade ${towerify_app_id} --file . --force --no-safety-backup"
                         }
                     }
