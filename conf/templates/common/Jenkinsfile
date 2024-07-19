@@ -144,19 +144,22 @@ pipeline {
                 script {
                     towerify_app_id = "${app_name}_${APP_ENV}"
                     basic_auth_value = ''
+                    allowed_ips_value = ''
                     boolean credentialsExist = checkCredentials("${towerify_app_id}")
                     if (credentialsExist) {
                         echo "Using credentials"
                         withCredentials([file(credentialsId: "${towerify_app_id}", variable: 'envfile')]) {
-                            sh "cp ${envfile} ./.env"
+                            sh 'cp $envfile ./.env'
                         }
                         basic_auth_value = sh(script: "grep '^TOWERIFY_BASIC_AUTH=' ./.env | cut -d'=' -f2 || echo ''", returnStdout: true).trim()
                         // basic_auth_value = basic_auth_value.replace('$', '\\$')  // Escape '$' in the extracted value
+                        allowed_ips_value = sh(script: "grep '^TOWERIFY_ALLOWED_IPS=' ./.env | cut -d'=' -f2 || echo ''", returnStdout: true).trim()
                     } else {
                         echo "Credentials not found, emptying .env file"
                         sh "echo -n '' ./.env"
                     }
                     print "basic_auth_value=${basic_auth_value}"
+                    print "allowed_ips_value=${allowed_ips_value}"
                 }
             }
         }
@@ -228,9 +231,10 @@ pipeline {
                 dir(TOWERIFY_APP_TEMPLATE_PATH) {
                     script {
                         if (towerify_app_not_installed == 1) {
-                            sh "sudo yunohost app install . --force --args=\"domain=${towerify_app_domain}&path=${towerify_app_path}&init_main_permission=visitors&basic_auth=${basic_auth_value}\" "
+                            sh "sudo yunohost app install . --force --args=\"domain=${towerify_app_domain}&path=${towerify_app_path}&init_main_permission=visitors&basic_auth=${basic_auth_value}&allowed_ips=${allowed_ips_value}\" "
                         } else {
                             sh "sudo yunohost app setting ${towerify_app_id} basic_auth -v '${basic_auth_value}'"
+                            sh "sudo yunohost app setting ${towerify_app_id} allowed_ips -v '${allowed_ips_value}'"
                             sh "sudo yunohost app upgrade ${towerify_app_id} --file . --force --no-safety-backup"
                         }
                     }
