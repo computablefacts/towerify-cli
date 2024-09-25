@@ -18,6 +18,11 @@ services:
       - DB_DATABASE=__DB_NAME__
       - DB_USERNAME=__DB_USER__
       - DB_PASSWORD=__DB_PWD__
+    deploy:
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
   lrvl9-scheduler:
     image: __DOCKER_IMAGE_NAME__:__DOCKER_IMAGE_TAG__
     extra_hosts:
