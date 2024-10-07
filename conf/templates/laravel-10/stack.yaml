@@ -26,6 +26,7 @@ services:
       - .env
     environment:
       - CONTAINER_ROLE=scheduler
+      - APP_URL=https://__DOMAIN____PATH__
       - LOG_CHANNEL=stderr
       - DB_CONNECTION=mysql
       - DB_HOST=host.docker.internal
