@@ -16,3 +16,7 @@ services:
         reservations:
           cpus: '0.1'
           memory: 20M
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
