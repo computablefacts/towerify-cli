@@ -127,7 +127,7 @@ jenkins_send_secrets() {
     ## Check if secret file already exists in Jenkins
     if jenkins_secrets_already_exists $jenkins_job_name; then
       progress_update "suppression des secrets existants" "yellow"
-      result=$(jenkins_api "/manage/credentials/store/system/domain/_/credential/${jenkins_job_name}/doDelete" "POST" "-H Accept:application/json" "false")
+      result=$(jenkins_api "manage/credentials/store/system/domain/_/credential/${jenkins_job_name}/doDelete" "POST" "-H Accept:application/json" "false")
       return_code=$?
       debug_output "jenkins_api return_code='${return_code}'"
 
