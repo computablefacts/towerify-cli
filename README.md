@@ -25,14 +25,14 @@ Etape à faire après la build.
 
 Ce mettre à la racine de la repo et faire la commande :
 ```
-towerify deploy
+towerify deploy --profile addapps
 ```
 
 Towerify CLI sera publié sur https://acme.towerify.io/cli/.
 
 Ce mettre à la racine de la repo et faire la commande :
 ```
-towerify deploy --env=prod
+towerify deploy --env=prod --profile addapps
 ```
 
 Towerify CLI sera publié sur https://cli.towerify.io/.
