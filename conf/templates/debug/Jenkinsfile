@@ -168,6 +168,7 @@ pipeline {
             steps {
                 script {
                     sh "cp ${dockerswarm_filename} ./app/build-stack.yaml"
+                    sh "sed -ri 's/__DOCKER_IMAGE_TAG__/${docker_image_tag}/' ./app/build-stack.yaml"
                     sh 'docker compose -f ./app/build-stack.yaml build'
                 }
             }
