@@ -164,6 +164,15 @@ pipeline {
             }
         }
 
+        stage('Build Docker image found in stack.yaml') {
+            steps {
+                script {
+                    sh "cp ${dockerswarm_filename} ./app/build-stack.yaml"
+                    sh 'docker compose -f ./app/build-stack.yaml build'
+                }
+            }
+        }
+
         stage('Prepare Towerify App template') {
             steps {
                 script {
