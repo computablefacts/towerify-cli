@@ -156,10 +156,20 @@ pipeline {
                         allowed_ips_value = sh(script: "grep '^TOWERIFY_ALLOWED_IPS=' ./.env | cut -d'=' -f2 || echo ''", returnStdout: true).trim()
                     } else {
                         echo "Credentials not found, emptying .env file"
-                        sh "echo -n '' ./.env"
+                        sh "echo -n 'TOWERIFY_INFO=NoSecretFound' > ./.env"
                     }
                     print "basic_auth_value=${basic_auth_value}"
                     print "allowed_ips_value=${allowed_ips_value}"
+                }
+            }
+        }
+
+        stage('Build Docker image found in stack.yaml') {
+            steps {
+                script {
+                    sh "cp ${dockerswarm_filename} ./app/build-stack.yaml"
+                    sh "sed -ri 's/__DOCKER_IMAGE_TAG__/${docker_image_tag}/' ./app/build-stack.yaml"
+                    sh 'docker compose -f ./app/build-stack.yaml build'
                 }
             }
         }
