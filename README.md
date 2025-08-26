@@ -9,6 +9,10 @@ Ces 2 scripts sont générés grâce à [Bashly](https://bashly.dannyb.co/).
 
 ## Build
 
+Avant de faire une build, pensez à modifier la version de Towerify dans le
+[fichier de configuration](./towerify/src/bashly.yml) et/ou 
+[celle de l'installation](./install/src/bashly.yml).
+
 ``` bash
 ./build.sh
 ```
