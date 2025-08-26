@@ -33,18 +33,38 @@ read_profile_settings() {
 }
 
 display_progress() {
-  local screen_nb_cols=$(($(tput cols) - 2))
+  local min_interval=30 # Interval minimum en secondes
+  local eol
+  local screen_nb_cols
+
+  if [ -t 0 ]; then
+    # Nous sommes dans un terminal, afficher avec retour à la ligne (\r)
+    eol='\r'
+    screen_nb_cols=$(tput cols)
+  else
+    # Nous ne sommes pas dans un terminal, limiter les affichages et afficher avec saut de ligne (\n)
+    current_time=$(date +%s)
+    if (( current_time - progress_last_display_time < min_interval )); then
+      return
+    fi
+    progress_last_display_time=$current_time
+    eol='\n'
+    screen_nb_cols=80
+  fi
+
+  screen_nb_cols=$((screen_nb_cols - 2)) # ajuster pour les espaces de début et de fin
   local nb_points=$(($screen_nb_cols - ${#progress_title} - ${#progress_status} - 4))
 
   printf "%s" "${progress_title} " >&2
   printf "%0.s." $(seq 1 $nb_points) >&2
-  printf "%s\r" " [$($progress_color "${progress_status}")]" >&2
+  printf "%s${eol}" " [$($progress_color "${progress_status}")]" >&2
 }
 
 progress_start() {
   declare -g progress_title=${1}
   declare -g progress_status=${2:-??}
   declare -g progress_color=${3:-blue}
+  declare -g progress_last_display_time=0
 
   display_progress
 }
@@ -63,8 +83,12 @@ progress_update() {
 }
 
 progress_stop() {
-  progress_update "$1" "$2"
+  declare -g progress_status=${1:-??}
+  declare -g progress_color=${2:-blue}
+  declare -g progress_last_display_time=0
+
+  display_progress
   echo
-  
+
   declare -g progress_title="Call progress_start first"
 }
