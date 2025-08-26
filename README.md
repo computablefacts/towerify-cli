@@ -41,6 +41,12 @@ La publication en DEV correspond à l'ancienne URL et sera bientôt supprimée.
 
 ## Developpement
 
+Il faut d'abord installer Bashly :
+
+```bash
+sudo gem install bashly
+```
+
 Le plus pratique pour développer un script est qu'il se regénère 
 automatiquement après chaque changement dans le code.
 
