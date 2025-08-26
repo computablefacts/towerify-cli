@@ -97,8 +97,9 @@ towerify_deploy() {
   local build_number=$last_build_number
 
   # Attendre que le job commence
+  progress_start "Job en attente de démarrage"
   while [ "${last_build_number}" == "${build_number}" ]; do
-      progress_start "Job en attente de démarrage"
+      progress_change_title "Job en attente de démarrage"
       sleep 3
       job_status=$(jenkins_job_status $jenkins_job_name 2>/dev/null)
       build_number=$(echo "${job_status}" | jq -r '.number')
@@ -106,7 +107,7 @@ towerify_deploy() {
       debug_output "Waiting job start: build_number=[$build_number]"
   done
   local job_start_time=$(date +%s)
-  progress_change_title "Job en cours d'exécution"
+  progress_start "Job en cours d'exécution"
   sleep 3
   
   local building=true
@@ -144,13 +145,15 @@ towerify_deploy() {
   if [ "${result}" == "SUCCESS" ]; then
     progress_stop "OK" "green_bold"
     echo "$(green_bold "==> Le job a réussi.")"
+    # Afficher l'URL permettant d'aller voir les logs dans Jenkins
+    echo "Lien vers le pipeline : $(jenkins_base_url)blue/organizations/jenkins/${jenkins_job_name}/detail/${jenkins_job_name}/${build_number}/pipeline"
   else
     progress_stop "KO" "red_bold"
     echo "$(red_bold "==> Le job a échoué.")"
     echo "Vous pouvez utiliser le lien ci-dessous pour avoir plus de détails sur l'erreur."
 
     # Afficher l'URL permettant d'aller voir les logs dans Jenkins
-    echo "Lien vers le pipeline : $(jenkins_base_url)blue/organizations/jenkins/${jenkins_job_name}/detail/${jenkins_job_name}/${build_number}/pipeline"
+    echo "$(red "Lien vers le pipeline :") $(jenkins_base_url)blue/organizations/jenkins/${jenkins_job_name}/detail/${jenkins_job_name}/${build_number}/pipeline"
   fi
 
   # Renomme le tar.gz avec un timestamp
@@ -166,4 +169,11 @@ towerify_deploy() {
   echo "Vous pouvez accéder à votre application avec :"
   echo "$(bold "https://${url_domain}/${url_path}")"
   echo
+
+  if [ "${result}" == "SUCCESS" ]; then
+    exit 0
+  else
+    exit 1
+  fi
+
 }
