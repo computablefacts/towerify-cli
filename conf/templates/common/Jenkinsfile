@@ -245,7 +245,7 @@ pipeline {
                         } else {
                             sh "sudo yunohost app setting ${towerify_app_id} basic_auth -v '${basic_auth_value}'"
                             sh "sudo yunohost app setting ${towerify_app_id} allowed_ips -v '${allowed_ips_value}'"
-                            sh "sudo yunohost app upgrade ${towerify_app_id} --file . --force --no-safety-backup"
+                            sh "sudo yunohost app upgrade ${towerify_app_id} --file . --force --no-safety-backup --debug"
                         }
                     }
                 }
